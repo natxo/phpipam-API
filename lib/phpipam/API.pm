@@ -23,11 +23,11 @@ sub new {
     $pass = $args{password};
     $user = $args{user};
     my $self = {
-        url      => $args{url},
-        proto    => $args{prot},
-        api      => $args{api},
-        user     => $args{user},
-        password => $args{pass},
+        url      => $url,
+        proto    => $prot,
+        api      => $api,
+        user     => $user,
+        password => $pass,
     };
 
     return bless( $self, $class );
@@ -64,7 +64,7 @@ sub get_token {
 #         NAME: get_sections
 #      PURPOSE: retrieves sections
 #   PARAMETERS: $token
-#      RETURNS: $sections array of hasshes ref
+#      RETURNS: $sections array of hashes ref
 #  DESCRIPTION: see comments
 #       THROWS: dies on http errors
 #     COMMENTS: http://phpipam.net/api-documentation/#sections
@@ -126,9 +126,9 @@ sub get_subnets {
 #===  FUNCTION  ================================================================
 #         NAME: free_first_address
 #      PURPOSE: get 1st available address
-#   PARAMETERS: id => 'section id', token => $token
+#   PARAMETERS: id => 'subnet id', token => $token
 #      RETURNS: $first_free
-#  DESCRIPTION: ????
+#  DESCRIPTION: get first free available ip on subnet
 #       THROWS: no exceptions
 #     COMMENTS: none
 #     SEE ALSO: n/a
@@ -242,6 +242,38 @@ sub delete_ip {
     else {
         my $err = $tx->error;
         die "cannot delete $ip_id $err->{code} response -> $err->{message}";
+    }
+}
+
+#===  FUNCTION  ================================================================
+#         NAME: search_hostname
+#      PURPOSE: lookup hostname info if already availble in phpipam
+#   PARAMETERS: host => "hostname", token => $token
+#      RETURNS: array ref with hashes containing the host info, 404 if
+#      nothing found
+#  DESCRIPTION:
+#       THROWS: on error dies with http codes
+#     COMMENTS: none
+#     SEE ALSO: get_sections
+#===============================================================================
+sub search_hostname {
+    my ( $self, %args ) = @_;
+    my $token = $args{token};
+    my $host = $args{host};
+
+    die "I need both the hostname as the token\n"
+      if !defined $token or !defined $host;
+
+    my $tx = $ua->get(
+        "$prot://$url$api/addresses/search_hostname/$host/" => { 'token' => $token }
+    );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die "cannot find host $host $err->{code} response -> $err->{message}";
     }
 }
 
