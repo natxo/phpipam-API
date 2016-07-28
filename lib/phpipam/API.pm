@@ -221,7 +221,7 @@ sub search_subnet {
 #===  FUNCTION  ================================================================
 #         NAME: add_ip
 #      PURPOSE: add ip address to ipam
-#   PARAMETERS: token, subnetid, ip, hostname, mac
+#   PARAMETERS: token, subnetid, ip, hostname, mac, owner, description
 #      RETURNS: if successfully added, location header on stdout with ip
 #      info
 #  DESCRIPTION: see name
@@ -231,22 +231,26 @@ sub search_subnet {
 #===============================================================================
 sub add_ip {
     my ( $self, %args ) = @_;
-    my $token    = $args{token};
-    my $subnetid = $args{subnetid};
-    my $ip       = $args{ip};
-    my $mask     = $args{mask};
-    my $hostname = $args{hostname};
-    my $macaddr  = $args{macaddr};
+    my $token       = $args{token};
+    my $subnetid    = $args{subnetid};
+    my $ip          = $args{ip};
+    my $mask        = $args{mask};
+    my $hostname    = $args{hostname};
+    my $macaddr     = $args{macaddr};
+    my $owner       = $args{owner};
+    my $description = $args{description};
 
     die "I need both the ip address as the subnet id\n"
       if !defined $ip or !defined $subnetid;
 
     my $tx = $ua->post(
         "$prot://$url$api/addresses/" => { 'token' => $token } => json => {
-            'ip'       => $ip,
-            'subnetId' => $subnetid,
-            'hostname' => $hostname,
-            'mac'      => $macaddr,
+            'ip'          => $ip,
+            'subnetId'    => $subnetid,
+            'hostname'    => $hostname,
+            'mac'         => $macaddr,
+            'owner'       => $owner,
+            'description' => $description,
         }
     );
 
@@ -447,7 +451,7 @@ sub get_ips_tag {
     }
     else {
         my $err = $tx->error;
-        die "cannot find ip tags $err->{code} response -> $err->{message}";
+        warn "cannot find ip tags $err->{code} response -> $err->{message}";
     }
 
 }    ## --- end sub get_ips_tag
