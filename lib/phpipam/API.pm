@@ -491,4 +491,22 @@ sub get_racks {
 
     }
 }    ## --- end sub get_racks
+
+sub get_l2domains {
+    my ( $self, $token ) = @_;
+    my $l2domains;
+    die "Need token\n" unless defined $token;
+
+    my $tx = $ua->get( "$prot://$url$api/l2domains/" => { 'token' => $token } );
+
+    if ( $tx->success ) {
+        $l2domains = $tx->res->json('/data');
+        return $l2domains;
+    }
+    else {
+        my $err = $tx->error;
+        die "Could not get l2domains $err->{code} response -> $err->{message}";
+
+    }
+}    ## --- end sub get_l2domains
 1;
