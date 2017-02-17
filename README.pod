@@ -75,7 +75,11 @@ proto: http or https. Use https if possible, but not all webservers have impleme
 
 =item *
 
-url: hostname part of uri (ip address or hostname.domain.tld);
+url: hostname part of uri (ip address or hostname.domain.tld) plus path to api url
+
+    $url = "host.domain.tld/phpipam/api/";
+
+In this case the phpipam instance is in the dir phpipam in the root of the webserver.
 
 =item *
 
