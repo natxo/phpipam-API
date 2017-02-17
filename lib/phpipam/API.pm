@@ -456,4 +456,39 @@ sub get_ips_tag {
 
 }    ## --- end sub get_ips_tag
 
+sub get_vlans {
+    my ( $self, $token ) = @_;
+    my $vlans;
+    die "Need token\n" unless defined $token;
+
+    my $tx = $ua->get( "$prot://$url$api/tools/vlans/" => { 'token' => $token } );
+
+    if ( $tx->success ) {
+        $vlans = $tx->res->json('/data');
+        return $vlans;
+    }
+    else {
+        my $err = $tx->error;
+        die "Could not get vlans $err->{code} response -> $err->{message}";
+
+    }
+}    ## --- end sub get_vlans
+
+sub get_racks {
+    my ( $self, $token ) = @_;
+    my $racks;
+    die "Need token\n" unless defined $token;
+
+    my $tx = $ua->get( "$prot://$url$api/tools/racks/" => { 'token' => $token } );
+
+    if ( $tx->success ) {
+        $racks = $tx->res->json('/data');
+        return $racks;
+    }
+    else {
+        my $err = $tx->error;
+        die "Could not get racks $err->{code} response -> $err->{message}";
+
+    }
+}    ## --- end sub get_racks
 1;
