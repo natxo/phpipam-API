@@ -1,0 +1,114 @@
+
+=head1 NAME
+
+phpipam::API - Provides a Perl5 interface to the phpipam API (https://phpipam.net/api/api_documentation/ )
+
+=head1 SYNOPSIS
+
+    use phpipam::API;
+    my $ipam = phpipam::API->new(
+        proto       => "http",
+        url         => "server.domain.tld",
+        api         => "name_api_phpipam",
+        user        => "user",
+        password    => "password",
+    );
+
+    # log in, get a token
+    my $token = $ipam->get_token;
+
+    # get sections
+    my $sections = $ipam->get_sections( $token );
+
+    # get vlans
+    my $vlans = $ipam->get_vlans( $token );
+
+    # get subnets
+    my $subnets = $ipam->get_subnets( id => $section{id}, token => $token, );
+
+    # get first free ip address in subnet 
+    $my $first_free( token => $token, id => $subnet->{id} );
+
+    # add ip to subnet
+    $ipam->add_ip(
+        ip          => $first_free,
+        token       => $token,
+        subnetid    => $subnet->{id},
+    );
+
+=head1 DESCRIPTION
+
+phpipam::API provides an interface to the phpipam REST API for perl5.
+
+Features:
+
+=over 4
+
+=item *
+
+GET: sections, subnets, free first address in subnet, rights, info addresses in subnet, ip tags, ips assigned to tag id, vlans, racks
+
+=item *
+
+SEARCH: subnet, hostnamea, ip,
+
+=item *
+
+ADD: ip
+
+=item *
+
+DELETE: ip
+
+=back
+
+=head1 METHODS
+
+=head2 Constructor
+
+Arguments:
+
+=over 4
+
+=item *
+
+proto: http or https. Use https if possible, but not all webservers have implemented http redirection;
+
+=item *
+
+url: hostname part of uri (ip address or hostname.domain.tld);
+
+=item *
+
+api: name of api specified in phpipam to access the api;
+
+=item *
+
+user: user allowed to access the specified api. At least read rights necessary;
+
+=item *
+
+password: self explanatory;
+
+=back
+
+=head2 get_token
+
+See L<http://phpipam.net/api-documentation/#authentication> 
+
+This method retrieves the authentication api token. If the request is not successful it dies
+
+    my $token = $ipam->get_token;
+
+=head2 get_sections
+
+Retrieve the sections available in the phpipam instance. See L<http://phpipam.net/api-documentation/#sections>.
+
+Returns: array of hashes reference
+
+Requires: token
+
+    my $section = $ipam->get_sections( $token );
+
+
+
