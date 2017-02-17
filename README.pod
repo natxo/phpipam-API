@@ -7,7 +7,7 @@ phpipam::API - Provides a Perl5 interface to the phpipam API (https://phpipam.ne
     use phpipam::API;
     my $ipam = phpipam::API->new(
         proto       => "http",
-        url         => "server.domain.tld",
+        url         => "server.domain.tld/phpipam/api/",
         api         => "name_api_phpipam",
         user        => "user",
         password    => "password",
