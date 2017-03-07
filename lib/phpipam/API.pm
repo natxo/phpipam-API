@@ -55,9 +55,67 @@ sub get_token {
     }
     else {
         my $err = $tx->error;
-        die "Could not get token: $err->{code} response -> $err->{message}";
+        die "Could not get token:  $err->{code} response "
+          . $tx->res->json('/message');
     }
 }
+
+#===  FUNCTION  ================================================================
+#         NAME: get_token_expiration
+#      PURPOSE: retrieve token expiration date
+#   PARAMETERS: $token
+#      RETURNS: $exp hash ref
+#  DESCRIPTION: see http://phpipam.net/api-documentation/#authentication
+#       THROWS: http://phpipam.net/api-documentation/#response_handling
+#     COMMENTS: dies on http error
+#     SEE ALSO: n/a
+#===============================================================================
+sub get_token_expiration {
+    my ( $self, $token ) = @_;
+    my $exp;
+    die "Need token\n" unless defined $token;
+
+    my $tx = $ua->get(
+        "$prot://$url$api/user/token_expires/" => { 'token' => $token } );
+
+    if ( $tx->success ) {
+        $exp = $tx->res->json('/data');
+        return $exp;
+    }
+    else {
+        my $err = $tx->error;
+        die "Could not get expiration date of token:  $err->{code} response "
+          . $tx->res->json('/message');
+    }
+}    ## --- end sub get_token_expiration
+
+#===  FUNCTION  ================================================================
+#         NAME: get_all_users
+#      PURPOSE: get list of all users
+#   PARAMETERS: $token
+#      RETURNS: array ref of hashes
+#  DESCRIPTION: see http://phpipam.net/api-documentation/#authentication
+#       THROWS: http://phpipam.net/api-documentation/#response_handling
+#     COMMENTS: dies on http error, requires api rwa rights
+#     SEE ALSO: n/a
+#===============================================================================
+sub get_all_users {
+    my ( $self, $token ) = @_;
+    my $allusers;
+    die "Need token\n" unless defined $token;
+
+    my $tx = $ua->get( "$prot://$url$api/user/all/" => { 'token' => $token } );
+
+    if ( $tx->success ) {
+        $allusers = $tx->res->json('/data');
+        return $allusers;
+    }
+    else {
+        my $err = $tx->error;
+        die "Could not get info on all users:  $err->{code} response "
+          . $tx->res->json('/message');
+    }
+}    ## --- end sub get_all_users
 
 #===  FUNCTION  ================================================================
 #         NAME: get_sections
@@ -82,7 +140,8 @@ sub get_sections {
     }
     else {
         my $err = $tx->error;
-        die "Could not get sections $err->{code} response -> $err->{message}";
+        die "Could not get sections:  $err->{code} response "
+          . $tx->res->json('/message');
 
     }
 }    ## --- end sub get_sections
@@ -154,7 +213,6 @@ sub free_first_address {
 
 }    ## --- end sub free_first_address
 
-
 #===  FUNCTION  ================================================================
 #         NAME: get_rights
 #      PURPOSE: get rights of logged in api user
@@ -183,10 +241,9 @@ sub get_rights {
     }
 }
 
-
 #===  FUNCTION  ================================================================
 #         NAME: search_subnet
-#      PURPOSE: get subnet info 
+#      PURPOSE: get subnet info
 #   PARAMETERS: token, subnet, mask
 #      RETURNS: array ref with hash describing subnet
 #  DESCRIPTION: see name
@@ -217,7 +274,6 @@ sub search_subnet {
     }
 }
 
-
 #===  FUNCTION  ================================================================
 #         NAME: add_ip
 #      PURPOSE: add ip address to ipam
@@ -226,7 +282,7 @@ sub search_subnet {
 #      info
 #  DESCRIPTION: see name
 #       THROWS: no exceptions
-#     COMMENTS: 
+#     COMMENTS:
 #     SEE ALSO: n/a
 #===============================================================================
 sub add_ip {
@@ -266,13 +322,12 @@ sub add_ip {
 
 }
 
-
 #===  FUNCTION  ================================================================
 #         NAME: delete_ip
-#      PURPOSE: remove ip from ipa 
+#      PURPOSE: remove ip from ipa
 #   PARAMETERS: token, ip_id
-#      RETURNS: 
-#  DESCRIPTION: 
+#      RETURNS:
+#  DESCRIPTION:
 #       THROWS: no exceptions
 #     COMMENTS: none
 #     SEE ALSO: n/a
@@ -317,8 +372,8 @@ sub search_hostname {
     die "I need both the hostname as the token\n"
       if !defined $token or !defined $host;
 
-    my $tx = $ua->get(
-        "$prot://$url$api/addresses/search_hostname/$host/" => { 'token' => $token } );
+    my $tx = $ua->get( "$prot://$url$api/addresses/search_hostname/$host/" =>
+          { 'token' => $token } );
 
     if ( $tx->success ) {
         return $tx->res->json('/data');
@@ -330,13 +385,12 @@ sub search_hostname {
     }
 }
 
-
 #===  FUNCTION  ================================================================
 #         NAME: search_ip
 #      PURPOSE: find ip details in ipam
 #   PARAMETERS: token, ip
 #      RETURNS: array of hashes ref
-#  DESCRIPTION: 
+#  DESCRIPTION:
 #       THROWS: no exceptions
 #     COMMENTS: none
 #     SEE ALSO: n/a
@@ -349,8 +403,8 @@ sub search_ip {
     die "I need both the token as the ip\n"
       if !defined $token or !defined $ip;
 
-    my $tx = $ua->get( "$prot://$url$api/addresses/search/$ip/" =>
-          { 'token' => $token } );
+    my $tx = $ua->get(
+        "$prot://$url$api/addresses/search/$ip/" => { 'token' => $token } );
 
     if ( $tx->success ) {
         return $tx->res->json('/data');
@@ -362,14 +416,13 @@ sub search_ip {
     }
 }    ## --- end sub search_ip
 
-
 #===  FUNCTION  ================================================================
 #         NAME: get_addrs_subnet
 #      PURPOSE: get info addresses in subnet
 #   PARAMETERS: token, subnetid
-#      RETURNS: array of hashes 
-#  DESCRIPTION: 
-#       THROWS: 
+#      RETURNS: array of hashes
+#  DESCRIPTION:
+#       THROWS:
 #     COMMENTS: none
 #     SEE ALSO: n/a
 #===============================================================================
@@ -461,7 +514,8 @@ sub get_vlans {
     my $vlans;
     die "Need token\n" unless defined $token;
 
-    my $tx = $ua->get( "$prot://$url$api/tools/vlans/" => { 'token' => $token } );
+    my $tx =
+      $ua->get( "$prot://$url$api/tools/vlans/" => { 'token' => $token } );
 
     if ( $tx->success ) {
         $vlans = $tx->res->json('/data');
@@ -479,7 +533,8 @@ sub get_racks {
     my $racks;
     die "Need token\n" unless defined $token;
 
-    my $tx = $ua->get( "$prot://$url$api/tools/racks/" => { 'token' => $token } );
+    my $tx =
+      $ua->get( "$prot://$url$api/tools/racks/" => { 'token' => $token } );
 
     if ( $tx->success ) {
         $racks = $tx->res->json('/data');
