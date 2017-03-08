@@ -442,8 +442,8 @@ sub get_addrs_subnet {
     }
     else {
         my $err = $tx->error;
-        die
-"cannot find addresses in subnet $subnetid $err->{code} response -> $err->{message}";
+        die "cannot find addresses in subnet $subnetid error: $err->{code} "
+          . $tx->res->json->{message}, "\n";
     }
 
 }
@@ -473,7 +473,8 @@ sub get_ip_tags {
     }
     else {
         my $err = $tx->error;
-        die "cannot find ip tags $err->{code} response -> $err->{message}";
+        die "cannot find ip tags $err->{code} " . $tx->res->json->{message},
+          "\n";
     }
 
 }
@@ -504,7 +505,8 @@ sub get_ips_tag {
     }
     else {
         my $err = $tx->error;
-        warn "cannot find ip tags $err->{code} response -> $err->{message}";
+        warn "cannot find ip tags $err->{code} " . $tx->res->json->{message},
+          "\n";
     }
 
 }    ## --- end sub get_ips_tag
@@ -523,7 +525,7 @@ sub get_vlans {
     }
     else {
         my $err = $tx->error;
-        die "Could not get vlans $err->{code} response -> $err->{message}";
+        die "Could not get vlans $err->{code} $tx->res->json->{message}";
 
     }
 }    ## --- end sub get_vlans
@@ -542,7 +544,7 @@ sub get_racks {
     }
     else {
         my $err = $tx->error;
-        die "Could not get racks $err->{code} response -> $err->{message}";
+        die "Could not get racks $err->{code} $tx->res->json->{message}";
 
     }
 }    ## --- end sub get_racks
