@@ -186,21 +186,29 @@ sub get_section {
     my ( $self, %args ) = @_;
     my $token = $args{token};
     my $id    = $args{id};
-    die "sorry, we require a section id to get info of section\n" unless $id;
+    my $name  = $args{name};
     die "sorry, without a token we cannot query the phpipam api\n"
       unless $token;
+    die "sorry, only one of id or name allowed\n"
+      if defined $id and defined $name;
 
-    my $section;
-    my $tx =
-      $ua->get( "$prot://$url$api/sections/$id/" => { 'token' => $token } );
-
+    my ( $section, $tx );
+    if ( defined $id ) {
+        $tx =
+          $ua->get( "$prot://$url$api/sections/$id/" => { 'token' => $token } );
+    }
+    elsif ( defined $name ) {
+        $tx =
+          $ua->get( "$prot://$url$api/sections/$name/" => { 'token' => $token } );
+    }
     if ( $tx->success ) {
         $section = $tx->res->json('/data');
         return $section;
     }
     else {
         my $err = $tx->error;
-        warn "Cannot get section $id $err->{code} response -> $err->{message}";
+        warn "Cannot get section info $err->{code}";
+        return $tx->res->json('message');
     }
 
 }    ## --- end sub get_section
