@@ -117,7 +117,6 @@ sub get_all_users {
     }
 }    ## --- end sub get_all_users
 
-
 #===  FUNCTION  ================================================================
 #         NAME: delete_token
 #      PURPOSE: delete api session token
@@ -173,7 +172,6 @@ sub get_sections {
     }
 }    ## --- end sub get_sections
 
-
 #===  FUNCTION  ================================================================
 #         NAME: get_section
 #      PURPOSE: retrieve info on specific section
@@ -185,16 +183,16 @@ sub get_sections {
 #     SEE ALSO: n/a
 #===============================================================================
 sub get_section {
-    my	( $self, %args )	= @_;
+    my ( $self, %args ) = @_;
     my $token = $args{token};
-    my $id = $args{id};
+    my $id    = $args{id};
     die "sorry, we require a section id to get info of section\n" unless $id;
     die "sorry, without a token we cannot query the phpipam api\n"
       unless $token;
 
     my $section;
-    my $tx = $ua->get(
-        "$prot://$url$api/sections/$id/" => { 'token' => $token } );
+    my $tx =
+      $ua->get( "$prot://$url$api/sections/$id/" => { 'token' => $token } );
 
     if ( $tx->success ) {
         $section = $tx->res->json('/data');
@@ -205,7 +203,7 @@ sub get_section {
         warn "Cannot get section $id $err->{code} response -> $err->{message}";
     }
 
-} ## --- end sub get_section
+}    ## --- end sub get_section
 
 #===  FUNCTION  ================================================================
 #         NAME: get_subnets
