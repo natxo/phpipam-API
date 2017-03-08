@@ -175,11 +175,11 @@ sub get_sections {
 #===  FUNCTION  ================================================================
 #         NAME: get_section
 #      PURPOSE: retrieve info on specific section
-#   PARAMETERS: $token, $id
+#   PARAMETERS: $token and ( $id or $name )
 #      RETURNS: hash ref with section info
 #  DESCRIPTION: retrieve info on specific section
 #       THROWS: no exceptions
-#     COMMENTS: none
+#     COMMENTS: only one of $id or $name is allowed
 #     SEE ALSO: n/a
 #===============================================================================
 sub get_section {
