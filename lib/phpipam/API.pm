@@ -117,6 +117,33 @@ sub get_all_users {
     }
 }    ## --- end sub get_all_users
 
+
+#===  FUNCTION  ================================================================
+#         NAME: delete_token
+#      PURPOSE: delete api session token
+#   PARAMETERS: $token
+#      RETURNS: array ref with http message
+#  DESCRIPTION: delete api session token
+#       THROWS: no exceptions
+#     COMMENTS: none
+#     SEE ALSO: n/a
+#===============================================================================
+sub delete_token {
+    my ( $self, $token ) = @_;
+    die "Need token\n" unless defined $token;
+
+    my $tx = $ua->delete( "$prot://$url$api/user/" => { 'token' => $token } );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die "Could not delete token!  $err->{code} "
+          . $tx->res->json('/message');
+    }
+}    ## --- end sub delete_token
+
 #===  FUNCTION  ================================================================
 #         NAME: get_sections
 #      PURPOSE: retrieves sections
@@ -145,6 +172,40 @@ sub get_sections {
 
     }
 }    ## --- end sub get_sections
+
+
+#===  FUNCTION  ================================================================
+#         NAME: get_section
+#      PURPOSE: retrieve info on specific section
+#   PARAMETERS: $token, $id
+#      RETURNS: hash ref with section info
+#  DESCRIPTION: retrieve info on specific section
+#       THROWS: no exceptions
+#     COMMENTS: none
+#     SEE ALSO: n/a
+#===============================================================================
+sub get_section {
+    my	( $self, %args )	= @_;
+    my $token = $args{token};
+    my $id = $args{id};
+    die "sorry, we require a section id to get info of section\n" unless $id;
+    die "sorry, without a token we cannot query the phpipam api\n"
+      unless $token;
+
+    my $section;
+    my $tx = $ua->get(
+        "$prot://$url$api/sections/$id/" => { 'token' => $token } );
+
+    if ( $tx->success ) {
+        $section = $tx->res->json('/data');
+        return $section;
+    }
+    else {
+        my $err = $tx->error;
+        warn "Cannot get section $id $err->{code} response -> $err->{message}";
+    }
+
+} ## --- end sub get_section
 
 #===  FUNCTION  ================================================================
 #         NAME: get_subnets
@@ -566,4 +627,5 @@ sub get_l2domains {
 
     }
 }    ## --- end sub get_l2domains
+
 1;
