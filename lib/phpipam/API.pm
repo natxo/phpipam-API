@@ -80,7 +80,7 @@ sub get_token_expiration {
 
     if ( $tx->success ) {
         $exp = $tx->res->json('/data');
-        return $exp;
+        return $exp->{'expires'};
     }
     else {
         my $err = $tx->error;
