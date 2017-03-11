@@ -32,6 +32,11 @@ sub new {
     return bless( $self, $class );
 }
 
+
+#-------------------------------------------------------------------------------
+#  Authentication user controller
+#-------------------------------------------------------------------------------
+
 #===  FUNCTION  ===============================================================
 #
 #         NAME: get_token
@@ -64,7 +69,7 @@ sub get_token {
 #         NAME: get_token_expiration
 #      PURPOSE: retrieve token expiration date
 #   PARAMETERS: $token
-#      RETURNS: $exp hash ref
+#      RETURNS: $exp with expiration date
 #  DESCRIPTION: see http://phpipam.net/api-documentation/#authentication
 #       THROWS: http://phpipam.net/api-documentation/#response_handling
 #     COMMENTS: dies on http error
@@ -143,6 +148,44 @@ sub delete_token {
     }
 }    ## --- end sub delete_token
 
+
+#-------------------------------------------------------------------------------
+#  Authorization (permissions)
+#-------------------------------------------------------------------------------
+
+#===  FUNCTION  ================================================================
+#         NAME: get_rights
+#      PURPOSE: get rights of logged in api user
+#   PARAMETERS: token
+#      RETURNS: hash reference with 2 keys: controllers and permissions
+#  DESCRIPTION: see name
+#       THROWS: no exceptions
+#     COMMENTS: none
+#     SEE ALSO: n/a
+#===============================================================================
+sub get_rights {
+    my ( $self, $token ) = @_;
+
+    my $rights;
+    my $tx = $ua->options( "$prot://$url$api/" => { 'token' => $token } );
+
+    if ( $tx->success ) {
+        $rights = $tx->res->json('/data');
+        return $rights;
+    }
+    else {
+        my $err = $tx->error;
+        warn "cannot get rights, error: $err->{code} "
+          . $tx->res->json->{message}, "\n";
+
+    }
+}
+
+
+#-------------------------------------------------------------------------------
+#  Sections controller
+#-------------------------------------------------------------------------------
+
 #===  FUNCTION  ================================================================
 #         NAME: get_sections
 #      PURPOSE: retrieves sections
@@ -213,6 +256,17 @@ sub get_section {
 
 }    ## --- end sub get_section
 
+
+#-------------------------------------------------------------------------------
+#  TODO: custom fields, create new section, update section, delete
+#  sectionj
+#-------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------
+#  Subnets controller
+#-------------------------------------------------------------------------------
+
 #===  FUNCTION  ================================================================
 #         NAME: get_subnets
 #      PURPOSE: retrieve the available subnets in a section
@@ -279,34 +333,6 @@ sub free_first_address {
     }
 
 }    ## --- end sub free_first_address
-
-#===  FUNCTION  ================================================================
-#         NAME: get_rights
-#      PURPOSE: get rights of logged in api user
-#   PARAMETERS: token
-#      RETURNS: hash reference with 2 keys: controllers and permissions
-#  DESCRIPTION: see name
-#       THROWS: no exceptions
-#     COMMENTS: none
-#     SEE ALSO: n/a
-#===============================================================================
-sub get_rights {
-    my ( $self, $token ) = @_;
-
-    my $rights;
-    my $tx = $ua->options( "$prot://$url$api/" => { 'token' => $token } );
-
-    if ( $tx->success ) {
-        $rights = $tx->res->json('/data');
-        return $rights;
-    }
-    else {
-        my $err = $tx->error;
-        warn "cannot get rights, error: $err->{code} "
-          . $tx->res->json->{message}, "\n";
-
-    }
-}
 
 #===  FUNCTION  ================================================================
 #         NAME: search_subnet
