@@ -257,6 +257,48 @@ sub get_section {
 }    ## --- end sub get_section
 
 
+#===  FUNCTION  ================================================================
+#         NAME: add_section
+#      PURPOSE: add a section to phpipam
+#   PARAMETERS: $token, %args: name (mandatory), description, show_vlans
+#      RETURNS: json object with message info
+#  DESCRIPTION: ????
+#       THROWS: no exceptions
+#     COMMENTS: none
+#     SEE ALSO: n/a
+#===============================================================================
+sub add_section {
+    my ( $self, %args ) = @_;
+    my $token = $args{token};
+    my $name  = $args{name};
+    my $desc  = $args{description} || undef;
+    my $sh_vl = $args{show_vlans} || 0;
+    die "sorry, without a token we cannot query the phpipam api\n"
+      unless $token;
+
+    my $section;
+    my $tx = $ua->post(
+        "$prot://$url$api/sections/" => { token => $token } => json => {
+            name  => $name,
+            showVLAN => $sh_vl,
+            description => $desc,
+        }
+    );
+
+    if ( $tx->success ) {
+        print "Section $name " . $tx->res->{'message'};
+        print ", address " . $tx->res->content->headers->location, "\n";
+        return $tx->res->content->asset->{content};
+    }
+    else {
+        my $err = $tx->error;
+        warn "Could not add section $err->{code}: "
+          . $tx->res->json->{'message'};
+        return $tx->res->json->{'message'};
+    }
+}
+
+
 #-------------------------------------------------------------------------------
 #  TODO: custom fields, create new section, update section, delete
 #  sectionj
@@ -366,6 +408,11 @@ sub search_subnet {
 
     }
 }
+
+
+#-------------------------------------------------------------------------------
+#  Address controller
+#-------------------------------------------------------------------------------
 
 #===  FUNCTION  ================================================================
 #         NAME: add_ip
@@ -604,6 +651,11 @@ sub get_ips_tag {
 
 }    ## --- end sub get_ips_tag
 
+
+#-------------------------------------------------------------------------------
+#  Vlans controller
+#-------------------------------------------------------------------------------
+
 sub get_vlans {
     my ( $self, $token ) = @_;
     my $vlans;
@@ -641,6 +693,11 @@ sub get_racks {
 
     }
 }    ## --- end sub get_racks
+
+
+#-------------------------------------------------------------------------------
+#  L2 domains controller
+#-------------------------------------------------------------------------------
 
 sub get_l2domains {
     my ( $self, $token ) = @_;
