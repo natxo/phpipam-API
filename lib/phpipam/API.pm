@@ -32,7 +32,6 @@ sub new {
     return bless( $self, $class );
 }
 
-
 #-------------------------------------------------------------------------------
 #  Authentication user controller
 #-------------------------------------------------------------------------------
@@ -148,7 +147,6 @@ sub delete_token {
     }
 }    ## --- end sub delete_token
 
-
 #-------------------------------------------------------------------------------
 #  Authorization (permissions)
 #-------------------------------------------------------------------------------
@@ -180,7 +178,6 @@ sub get_rights {
 
     }
 }
-
 
 #-------------------------------------------------------------------------------
 #  Sections controller
@@ -236,11 +233,13 @@ sub get_section {
     my ( $section, $tx );
     if ( defined $args{id} ) {
         $tx =
-          $ua->get( "$prot://$url$api/sections/$args{id}/" => { 'token' => $token } );
+          $ua->get(
+            "$prot://$url$api/sections/$args{id}/" => { 'token' => $token } );
     }
     elsif ( defined $args{name} ) {
         $tx =
-          $ua->get( "$prot://$url$api/sections/$args{name}/" => { 'token' => $token } );
+          $ua->get(
+            "$prot://$url$api/sections/$args{name}/" => { 'token' => $token } );
     }
     if ( $tx->success ) {
         $section = $tx->res->json('/data');
@@ -254,14 +253,13 @@ sub get_section {
 
 }    ## --- end sub get_section
 
-
 #===  FUNCTION  ================================================================
 #         NAME: add_section
 #      PURPOSE: add a section to phpipam
 #   PARAMETERS: %args with as keys the accepted parameters for the post
 #               method of the section conotroller
 #      RETURNS: json object with message info
-#  DESCRIPTION: 
+#  DESCRIPTION:
 #       THROWS: no exceptions
 #     COMMENTS: token and name are compulsory.
 #     SEE ALSO: n/a
@@ -271,14 +269,12 @@ sub add_section {
     my $token = $args{token};
 
     # cannot pass token as parameter in the controller
-    delete($args{token});
+    delete( $args{token} );
 
     my $section;
     my $tx = $ua->post(
-        "$prot://$url$api/sections/" => { token => $token } => json => {
-            %args
-        }
-    );
+        "$prot://$url$api/sections/" => { token => $token } => json =>
+          { %args } );
 
     if ( $tx->success ) {
         print "Section $args{name} " . $tx->res->{'message'};
@@ -296,14 +292,14 @@ sub add_section {
 sub del_section {
     my ( $self, %args ) = @_;
     my $token = $args{token};
-    my $id  = $args{id};
+    my $id    = $args{id};
     die "sorry, without a token we cannot query the phpipam api\n"
       unless $token;
 
     my $section;
     my $tx = $ua->delete(
         "$prot://$url$api/sections/" => { token => $token } => json => {
-            id  => $id,
+            id => $id,
         }
     );
 
@@ -319,14 +315,13 @@ sub del_section {
 
 }
 
-
 #===  FUNCTION  ================================================================
 #         NAME: update_section
 #      PURPOSE: update details section controller
 #   PARAMETERS: %args with as keys the accepted parameters for the patch
 #               method of the section conotroller
 #      RETURNS: http success/error codes
-#  DESCRIPTION: 
+#  DESCRIPTION:
 #       THROWS: no exceptions
 #     COMMENTS: token and id are compulsory.
 #     SEE ALSO: n/a
@@ -336,14 +331,12 @@ sub update_section {
     my $token = $args{token};
     #
     # cannot pass token as parameter in the controller
-    delete($args{token});
+    delete( $args{token} );
 
     my $section;
     my $tx = $ua->patch(
-        "$prot://$url$api/sections/" => { token => $token } => json => {
-            %args,
-        }
-    );
+        "$prot://$url$api/sections/" => { token => $token } => json =>
+          { %args, } );
     if ( $tx->success ) {
         return $tx->res->content->asset->{content};
     }
@@ -394,14 +387,12 @@ sub get_subnets {
 #  TODO: custom fields
 #-------------------------------------------------------------------------------
 
-
 #-------------------------------------------------------------------------------
 #  Subnets controller
 #-------------------------------------------------------------------------------
 
-
 #-------------------------------------------------------------------------------
-#  TODO: get_subnet_slaves, 
+#  TODO: get_subnet_slaves,
 #  get_subnet_slave_rec, get_subnet_address,
 #  get_first_subnet, get_all_subnets, add_subnet, add_child_subnet,
 #  update_subnet, resize_subnet, split_subnet, set_subnet_perms,
@@ -411,16 +402,15 @@ sub get_subnets {
 sub get_subnet_addresses {
     my ( $self, %args ) = @_;
 
-    my $tx = $ua->get(
-        "$prot://$url$api/subnets/$args{id}/addresses/" => { 'token' => $args{token} } );
+    my $tx = $ua->get( "$prot://$url$api/subnets/$args{id}/addresses/" =>
+          { 'token' => $args{token} } );
 
     if ( $tx->success ) {
         return $tx->res->json('/data');
     }
     else {
         my $err = $tx->error;
-        die
-"Cannot get subnet usage: $err->{code} response -> $err->{message}";
+        die "Cannot get subnet usage: $err->{code} response -> $err->{message}";
     }
 
 }
@@ -428,16 +418,15 @@ sub get_subnet_addresses {
 sub get_subnet_usage {
     my ( $self, %args ) = @_;
 
-    my $tx = $ua->get(
-        "$prot://$url$api/subnets/$args{id}/usage/" => { 'token' => $args{token} } );
+    my $tx = $ua->get( "$prot://$url$api/subnets/$args{id}/usage/" =>
+          { 'token' => $args{token} } );
 
     if ( $tx->success ) {
         return $tx->res->json('/data');
     }
     else {
         my $err = $tx->error;
-        die
-"Cannot get subnet usage: $err->{code} response -> $err->{message}";
+        die "Cannot get subnet usage: $err->{code} response -> $err->{message}";
     }
 
 }
@@ -522,7 +511,6 @@ sub search_subnet {
 
     }
 }
-
 
 #-------------------------------------------------------------------------------
 #  Address controller
@@ -765,7 +753,6 @@ sub get_ips_tag {
 
 }    ## --- end sub get_ips_tag
 
-
 #-------------------------------------------------------------------------------
 #  Vlans controller
 #-------------------------------------------------------------------------------
@@ -807,7 +794,6 @@ sub get_racks {
 
     }
 }    ## --- end sub get_racks
-
 
 #-------------------------------------------------------------------------------
 #  L2 domains controller
