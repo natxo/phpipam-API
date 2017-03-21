@@ -400,6 +400,64 @@ sub get_subnets {
 #-------------------------------------------------------------------------------
 
 
+#-------------------------------------------------------------------------------
+#  TODO: get_subnet_slaves, 
+#  get_subnet_slave_rec, get_subnet_address,
+#  get_first_subnet, get_all_subnets, add_subnet, add_child_subnet,
+#  update_subnet, resize_subnet, split_subnet, set_subnet_perms,
+#  del_subnet, truncate_subnet, reset_subnet_perms
+#-------------------------------------------------------------------------------
+
+sub get_subnet_addresses {
+    my ( $self, %args ) = @_;
+
+    my $tx = $ua->get(
+        "$prot://$url$api/subnets/$args{id}/addresses/" => { 'token' => $args{token} } );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die
+"Cannot get subnet usage: $err->{code} response -> $err->{message}";
+    }
+
+}
+
+sub get_subnet_usage {
+    my ( $self, %args ) = @_;
+
+    my $tx = $ua->get(
+        "$prot://$url$api/subnets/$args{id}/usage/" => { 'token' => $args{token} } );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die
+"Cannot get subnet usage: $err->{code} response -> $err->{message}";
+    }
+
+}
+
+sub get_subnet {
+    my ( $self, %args ) = @_;
+
+    my $tx = $ua->get(
+        "$prot://$url$api/subnets/$args{id}/" => { 'token' => $args{token} } );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die
+"Cannot get first free address $err->{code} response -> $err->{message}";
+    }
+}
+
 #===  FUNCTION  ================================================================
 #         NAME: free_first_address
 #      PURPOSE: get 1st available address
