@@ -219,6 +219,7 @@ sub get_sections {
 #         NAME: get_section
 #      PURPOSE: retrieve info on specific section
 #   PARAMETERS: $token and ( $id or $name )
+#   PARAMETERS: %args, token and (id or name) compulsary
 #      RETURNS: hash ref with section info
 #  DESCRIPTION: retrieve info on specific section
 #       THROWS: no exceptions
@@ -228,21 +229,18 @@ sub get_sections {
 sub get_section {
     my ( $self, %args ) = @_;
     my $token = $args{token};
-    my $id    = $args{id};
-    my $name  = $args{name};
-    die "sorry, without a token we cannot query the phpipam api\n"
-      unless $token;
-    die "sorry, only one of id or name allowed\n"
-      if defined $id and defined $name;
+
+    die "sorry, only one of id or name allowed, not both\n"
+      if defined $args{id} and defined $args{name};
 
     my ( $section, $tx );
-    if ( defined $id ) {
+    if ( defined $args{id} ) {
         $tx =
-          $ua->get( "$prot://$url$api/sections/$id/" => { 'token' => $token } );
+          $ua->get( "$prot://$url$api/sections/$args{id}/" => { 'token' => $token } );
     }
-    elsif ( defined $name ) {
+    elsif ( defined $args{name} ) {
         $tx =
-          $ua->get( "$prot://$url$api/sections/$name/" => { 'token' => $token } );
+          $ua->get( "$prot://$url$api/sections/$args{name}/" => { 'token' => $token } );
     }
     if ( $tx->success ) {
         $section = $tx->res->json('/data');
@@ -260,36 +258,30 @@ sub get_section {
 #===  FUNCTION  ================================================================
 #         NAME: add_section
 #      PURPOSE: add a section to phpipam
-#   PARAMETERS: $token, %args: name (mandatory), description, show_vlans
+#   PARAMETERS: %args with as keys the accepted parameters for the post
+#               method of the section conotroller
 #      RETURNS: json object with message info
-#  DESCRIPTION: ????
+#  DESCRIPTION: 
 #       THROWS: no exceptions
-#     COMMENTS: none
+#     COMMENTS: token and name are compulsory.
 #     SEE ALSO: n/a
 #===============================================================================
 sub add_section {
     my ( $self, %args ) = @_;
     my $token = $args{token};
-    my $name  = $args{name};
-    my $desc  = $args{description} || undef;
-    my $sh_vl = $args{showvlan} || 0;
-    my $perms = $args{permissions} || '{"0":"0"}';
 
-    die "sorry, without a token we cannot query the phpipam api\n"
-      unless $token;
+    # cannot pass token as parameter in the controller
+    delete($args{token});
 
     my $section;
     my $tx = $ua->post(
         "$prot://$url$api/sections/" => { token => $token } => json => {
-            name        => $name,
-            showVLAN    => $sh_vl,
-            description => $desc,
-            permissions => $perms,
+            %args
         }
     );
 
     if ( $tx->success ) {
-        print "Section $name " . $tx->res->{'message'};
+        print "Section $args{name} " . $tx->res->{'message'};
         print ", address " . $tx->res->content->headers->location, "\n";
         return $tx->res->content->asset->{content};
     }
@@ -363,15 +355,6 @@ sub update_section {
     }
 }
 
-#-------------------------------------------------------------------------------
-#  TODO: custom fields, update section, 
-#-------------------------------------------------------------------------------
-
-
-#-------------------------------------------------------------------------------
-#  Subnets controller
-#-------------------------------------------------------------------------------
-
 #===  FUNCTION  ================================================================
 #         NAME: get_subnets
 #      PURPOSE: retrieve the available subnets in a section
@@ -406,6 +389,16 @@ sub get_subnets {
     }
 
 }    ## --- end sub get_subnets
+
+#-------------------------------------------------------------------------------
+#  TODO: custom fields
+#-------------------------------------------------------------------------------
+
+
+#-------------------------------------------------------------------------------
+#  Subnets controller
+#-------------------------------------------------------------------------------
+
 
 #===  FUNCTION  ================================================================
 #         NAME: free_first_address
