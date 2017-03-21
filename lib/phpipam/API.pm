@@ -272,16 +272,19 @@ sub add_section {
     my $token = $args{token};
     my $name  = $args{name};
     my $desc  = $args{description} || undef;
-    my $sh_vl = $args{show_vlans} || 0;
+    my $sh_vl = $args{showvlan} || 0;
+    my $perms = $args{permissions} || '{"0":"0"}';
+
     die "sorry, without a token we cannot query the phpipam api\n"
       unless $token;
 
     my $section;
     my $tx = $ua->post(
         "$prot://$url$api/sections/" => { token => $token } => json => {
-            name  => $name,
-            showVLAN => $sh_vl,
+            name        => $name,
+            showVLAN    => $sh_vl,
             description => $desc,
+            permissions => $perms,
         }
     );
 
@@ -298,10 +301,70 @@ sub add_section {
     }
 }
 
+sub del_section {
+    my ( $self, %args ) = @_;
+    my $token = $args{token};
+    my $id  = $args{id};
+    die "sorry, without a token we cannot query the phpipam api\n"
+      unless $token;
+
+    my $section;
+    my $tx = $ua->delete(
+        "$prot://$url$api/sections/" => { token => $token } => json => {
+            id  => $id,
+        }
+    );
+
+    if ( $tx->success ) {
+        return $tx->res->content->asset->{content};
+    }
+    else {
+        my $err = $tx->error;
+        warn "Could not remove section $err->{code}: "
+          . $tx->res->json->{'message'};
+        return $tx->res->json->{'message'};
+    }
+
+}
+
+
+#===  FUNCTION  ================================================================
+#         NAME: update_section
+#      PURPOSE: update details section controller
+#   PARAMETERS: %args with as keys the accepted parameters for the patch
+#               method of the section conotroller
+#      RETURNS: http success/error codes
+#  DESCRIPTION: 
+#       THROWS: no exceptions
+#     COMMENTS: token and id are compulsory.
+#     SEE ALSO: n/a
+#===============================================================================
+sub update_section {
+    my ( $sef, %args ) = @_;
+    my $token = $args{token};
+    #
+    # cannot pass token as parameter in the controller
+    delete($args{token});
+
+    my $section;
+    my $tx = $ua->patch(
+        "$prot://$url$api/sections/" => { token => $token } => json => {
+            %args,
+        }
+    );
+    if ( $tx->success ) {
+        return $tx->res->content->asset->{content};
+    }
+    else {
+        my $err = $tx->error;
+        warn "Could not update section $err->{code}: "
+          . $tx->res->json->{'message'};
+        return $tx->res->json->{'message'};
+    }
+}
 
 #-------------------------------------------------------------------------------
-#  TODO: custom fields, create new section, update section, delete
-#  sectionj
+#  TODO: custom fields, update section, 
 #-------------------------------------------------------------------------------
 
 
