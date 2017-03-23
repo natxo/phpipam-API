@@ -313,8 +313,7 @@ sub get_all_users {
     my $tx = $ua->get( "$prot://$url$api/user/all/" => { 'token' => $token } );
 
     if ( $tx->success ) {
-        $allusers = $tx->res->json('/data');
-        return $allusers;
+        return $tx->res->json('/data');
     }
     else {
         my $err = $tx->error;
@@ -352,7 +351,7 @@ sub delete_token {
     my $tx = $ua->delete( "$prot://$url$api/user/" => { 'token' => $token } );
 
     if ( $tx->success ) {
-        return $tx->res->content->asset->{content};
+        return $tx->res->json('/data')->[0];
     }
     else {
         my $err = $tx->error;
