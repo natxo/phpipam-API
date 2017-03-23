@@ -1,5 +1,132 @@
 package phpipam::API;
 
+=head1 NAME
+
+phpipam::API - Provides a Perl5 interface to the phpipam API (https://phpipam.net/api/api_documentation/ )
+
+=head1 SYNOPSIS
+
+    use phpipam::API;
+    my $ipam = phpipam::API->new(
+        proto       => "http",
+        url         => "server.domain.tld/phpipam/api/",
+        api         => "name_api_phpipam",
+        user        => "user",
+        password    => "password",
+    );
+
+    # log in, get a token
+    my $token = $ipam->get_token;
+
+    # get sections
+    my $sections = $ipam->get_sections( $token );
+
+    # get vlans
+    my $vlans = $ipam->get_vlans( $token );
+
+    # get subnets
+    my $subnets = $ipam->get_subnets( id => $section{id}, token => $token, );
+
+    # get first free ip address in subnet 
+    $my $first_free( token => $token, id => $subnet->{id} );
+
+    # add ip to subnet
+    $ipam->add_ip(
+        ip          => $first_free,
+        token       => $token,
+        subnetid    => $subnet->{id},
+    );
+
+=head1 DESCRIPTION
+
+phpipam::API provides an interface to the phpipam REST API for perl5.
+
+The goal is to support all the existing api controllers:
+
+=over 4
+
+=item *
+
+sections
+
+=item *
+
+subnets
+
+=item *
+
+addresses
+
+=item *
+
+vlans
+
+=item *
+
+l2domains
+
+=item *
+
+vrfs
+
+=item *
+
+tools
+
+=item *
+
+prefix
+
+=back
+
+=head1 REQUIREMENTS
+
+Mojo::UserAgent, part of Mojolicious, easiest installed with cpanm:
+
+    cpanm Mojolicious --notest
+
+=head1 INSTALLATION
+
+This module has not (yet?) been released to the CPAN, but using it is simply a matter of setting lib/phpipam/API.pm in the same directory as the script. Then you can 
+
+    use lib 'lib';
+    use phpipam::API;
+
+=head1 TODO
+
+=over 2
+
+=item *
+
+document rest of implemented methods
+
+=item *
+
+security: right now only NONE is implemented. Hence use of tls connections strongly recommended (communications clear text over the wire otherwise).
+
+=item *
+
+implement new methods in version phpipam 1.3
+
+=back
+
+=head1 DEBUGGING
+
+export the environment variable MOJO_USERAGENT_DEBUG=1 and run your perl script:
+
+    export MOJO_USERAGENT_DEBUG=1
+    ./script.pl 
+
+You will be able to follow the whole http client/server conversation (it will post your encoded password so do not leave this variable enabled on your code.
+
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to the developers of phpipam for a great product, the maintainers of the Perl language and Mojolicious for making this easily possible
+
+=head1 METHODS
+
+=cut
+
 use strict;
 use warnings;
 use Mojo::UserAgent;
@@ -13,7 +140,50 @@ $ua = $ua->max_redirects(5);
 my %args;
 my ( $url, $prot, $api, $user, $pass );
 
-# constructor
+=head2 Constructor
+
+    my $ipam = phpipam::API->new(
+        proto => "http",
+        url     => "server.domain.tld/phpipam/api/",
+        api     => "name_api_phpipam",
+        user    => "api user",
+        password    => "password",
+    );
+
+Arguments:
+
+All compulsory ;-)
+
+=over 4
+
+=item *
+
+proto: http or https. Use https if possible, but not all webservers have implemented http redirection;
+
+=item *
+
+url: hostname part of uri (ip address or hostname.domain.tld) plus path to api url
+
+    $url = "host.domain.tld/phpipam/api/";
+
+In this case the phpipam instance is in the dir phpipam in the root of the webserver.
+
+=item *
+
+api: name of api specified in phpipam to access the api;
+
+=item *
+
+user: user allowed to access the specified api. At least read rights necessary;
+
+=item *
+
+password: self explanatory;
+
+=back
+
+=cut
+
 sub new {
     my ( $class, %args ) = @_;
     $url  = $args{url};
@@ -35,6 +205,16 @@ sub new {
 #-------------------------------------------------------------------------------
 #  Authentication user controller
 #-------------------------------------------------------------------------------
+
+=head2 get_token
+
+See L<http://phpipam.net/api-documentation/#authentication> 
+
+This method retrieves the authentication api token. If the request is not successful it dies
+
+    my $token = $ipam->get_token;
+
+=cut
 
 #===  FUNCTION  ===============================================================
 #
@@ -63,6 +243,16 @@ sub get_token {
           . $tx->res->json('/message');
     }
 }
+
+=head2 get_token_expiration
+
+    my $exp = $ipam->get_token_expiration( $token );
+
+This method returns the token expiration date
+
+The method requires the $token parameter.
+
+=cut
 
 #===  FUNCTION  ================================================================
 #         NAME: get_token_expiration
@@ -93,6 +283,18 @@ sub get_token_expiration {
     }
 }    ## --- end sub get_token_expiration
 
+=head2 get_all_users
+
+Retrieve a list of all users (requires rwa permissions on the api)
+
+    my $users = $ipam->get_all_users( $token );
+
+Returns an array reference of hashes with the user info.
+
+The method requires the $token parameter.
+
+=cut
+
 #===  FUNCTION  ================================================================
 #         NAME: get_all_users
 #      PURPOSE: get list of all users
@@ -121,6 +323,18 @@ sub get_all_users {
     }
 }    ## --- end sub get_all_users
 
+=head2 delete_token
+
+Remove the api token.
+
+    $ipam->delete_token( $token );
+
+If assigned to a scalar variable, it returns a json string with info.
+
+The method requires the $token parameter.
+
+=cut
+
 #===  FUNCTION  ================================================================
 #         NAME: delete_token
 #      PURPOSE: delete api session token
@@ -133,12 +347,12 @@ sub get_all_users {
 #===============================================================================
 sub delete_token {
     my ( $self, $token ) = @_;
-    die "Need token\n" unless defined $token;
+    die "Need token to delete_token\n" unless defined $token;
 
     my $tx = $ua->delete( "$prot://$url$api/user/" => { 'token' => $token } );
 
     if ( $tx->success ) {
-        return $tx->res->json('/data');
+        return $tx->res->content->asset->{content};
     }
     else {
         my $err = $tx->error;
@@ -182,6 +396,18 @@ sub get_rights {
 #-------------------------------------------------------------------------------
 #  Sections controller
 #-------------------------------------------------------------------------------
+
+=head2 get_sections
+
+Retrieve the sections available in the phpipam instance. See L<http://phpipam.net/api-documentation/#sections>.
+
+Returns: array of hashes reference
+
+Requires: token
+
+    my $section = $ipam->get_sections( $token );
+
+=cut
 
 #===  FUNCTION  ================================================================
 #         NAME: get_sections
@@ -274,7 +500,7 @@ sub add_section {
     my $section;
     my $tx = $ua->post(
         "$prot://$url$api/sections/" => { token => $token } => json =>
-          { %args } );
+          {%args} );
 
     if ( $tx->success ) {
         print "Section $args{name} " . $tx->res->{'message'};

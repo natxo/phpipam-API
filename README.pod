@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 phpipam::API - Provides a Perl5 interface to the phpipam API (https://phpipam.net/api/api_documentation/ )
@@ -39,33 +41,103 @@ phpipam::API - Provides a Perl5 interface to the phpipam API (https://phpipam.ne
 
 phpipam::API provides an interface to the phpipam REST API for perl5.
 
-Features:
+The goal is to support all the existing api controllers:
 
 =over 4
 
 =item *
 
-GET: sections, subnets, free first address in subnet, rights, info addresses in subnet, ip tags, ips assigned to tag id, vlans, racks
+sections
 
 =item *
 
-SEARCH: subnet, hostnamea, ip,
+subnets
 
 =item *
 
-ADD: ip
+addresses
 
 =item *
 
-DELETE: ip
+vlans
+
+=item *
+
+l2domains
+
+=item *
+
+vrfs
+
+=item *
+
+tools
+
+=item *
+
+prefix
 
 =back
+
+=head1 REQUIREMENTS
+
+Mojo::UserAgent, part of Mojolicious, easiest installed with cpanm:
+
+    cpanm Mojolicious --notest
+
+=head1 INSTALLATION
+
+This module has not (yet?) been released to the CPAN, but using it is simply a matter of setting lib/phpipam/API.pm in the same directory as the script. Then you can
+
+    use lib 'lib';
+    use phpipam::API;
+
+=head1 TODO
+
+=over 2
+
+=item *
+
+document rest of implemented methods
+
+=item *
+
+security: right now only NONE is implemented. Hence use of tls connections strongly recommended (communications clear text over the wire otherwise).
+
+=item *
+
+implement new methods in version phpipam 1.3
+
+=back
+
+=head1 DEBUGGING
+
+export the environment variable MOJO_USERAGENT_DEBUG=1 and run your perl script:
+
+    export MOJO_USERAGENT_DEBUG=1
+    ./script.pl
+
+You will be able to follow the whole http client/server conversation (it will post your encoded password so do not leave this variable enabled on your code.
+
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to the developers of phpipam for a great product, the maintainers of the Perl language and Mojolicious for making this easily possible
 
 =head1 METHODS
 
 =head2 Constructor
 
+    my $ipam = phpipam::API->new(
+        proto => "http",
+        url     => "server.domain.tld/phpipam/api/",
+        api     => "name_api_phpipam",
+        user    => "api user",
+        password    => "password",
+    );
+
 Arguments:
+
+All compulsory ;-)
 
 =over 4
 
@@ -97,11 +169,39 @@ password: self explanatory;
 
 =head2 get_token
 
-See L<http://phpipam.net/api-documentation/#authentication> 
+See L<http://phpipam.net/api-documentation/#authentication>
 
 This method retrieves the authentication api token. If the request is not successful it dies
 
     my $token = $ipam->get_token;
+
+=head2 get_token_expiration
+
+    my $exp = $ipam->get_token_expiration( $token );
+
+This method returns the token expiration date
+
+The method requires the $token parameter.
+
+=head2 get_all_users
+
+Retrieve a list of all users (requires rwa permissions on the api)
+
+    my $users = $ipam->get_all_users( $token );
+
+Returns an array reference of hashes with the user info.
+
+The method requires the $token parameter.
+
+=head2 delete_token
+
+Remove the api token.
+
+    $ipam->delete_token( $token );
+
+If assigned to a scalar variable, it returns a json string with info.
+
+The method requires the $token parameter.
 
 =head2 get_sections
 
@@ -112,49 +212,4 @@ Returns: array of hashes reference
 Requires: token
 
     my $section = $ipam->get_sections( $token );
-
-
-=head1 REQUIREMENTS
-
-Mojo::UserAgent, part of Mojolicious, easiest installed with cpanm:
-
-    cpanm Mojolicious --notest
-
-=head1 INSTALLATION
-
-This module has not (yet?) been released to the CPAN, but using it is simply a matter of setting lib/phpipam/API.pm in the same directory as the script. Then you can 
-
-    use lib 'lib';
-    use phpipam::API;
-
-=head1 TODO
-
-=over 2
-
-=item *
-
-document rest of implemented methods
-
-=item *
-
-security: right now only NONE is implemented. Hence use of tls connections strongly recommended (communications clear text over the wire otherwise).
-
-=item *
-
-implement new methods in version phpipam 1.3
-
-=back
-
-=head1 DEBUGGING
-
-export the environment variable MOJO_USERAGENT_DEBUG=1 and run your perl script:
-
-    export MOJO_USERAGENT_DEBUG=1
-    ./script.pl 
-
-You will be able to follow the whole http client/server conversation (it will post your encoded password so do not leave this variable enabled on your code.
-
-=head1 ACKNOWLEDGEMENTS
-
-Thanks to the developers of phpipam for a great product, the maintainers of the Perl language and Mojolicious for making this easily possible
 
