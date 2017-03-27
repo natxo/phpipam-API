@@ -364,6 +364,16 @@ sub delete_token {
 #  Authorization (permissions)
 #-------------------------------------------------------------------------------
 
+=head2 get_rights
+
+Retrieve the rights of the logged in api user
+
+    my $rights = $ipam->get_rights( $token );
+
+Returns a hash ref with 2 keys, one for the permissions and one for controllers.
+
+=cut
+
 #===  FUNCTION  ================================================================
 #         NAME: get_rights
 #      PURPOSE: get rights of logged in api user
@@ -377,7 +387,6 @@ sub delete_token {
 sub get_rights {
     my ( $self, $token ) = @_;
 
-    my $rights;
     my $tx = $ua->options( "$prot://$url$api/" => { 'token' => $token } );
 
     if ( $tx->success ) {
