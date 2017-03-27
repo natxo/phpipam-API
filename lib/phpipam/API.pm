@@ -640,6 +640,7 @@ Requires named arguments token and id (section id).
 Returns an array reference of hashes containing the subnet info.
 
 =cut
+
 #===  FUNCTION  ================================================================
 #         NAME: get_subnets
 #      PURPOSE: retrieve the available subnets in a section
@@ -691,6 +692,16 @@ sub get_subnets {
 #  del_subnet, truncate_subnet, reset_subnet_perms
 #-------------------------------------------------------------------------------
 
+=head2 get_subnet_addresses
+
+get all ip addresses in the chosen subnet.
+
+Requires named arguments token and id (subnet id).
+
+    my $sub_addresses = $ipam->get_subnet_addresses( token => $token, id => 8, );
+
+=cut
+
 sub get_subnet_addresses {
     my ( $self, %args ) = @_;
 
@@ -707,6 +718,15 @@ sub get_subnet_addresses {
 
 }
 
+=head2 get_subnet_usage
+
+get info on usage of the specific subnet.
+
+Requires named arguments token and id (subnet id).
+
+    my $sub_usage = $ipam->get_subnet_usage( token => $token, id => 8, );
+
+=cut
 sub get_subnet_usage {
     my ( $self, %args ) = @_;
 
@@ -723,22 +743,36 @@ sub get_subnet_usage {
 
 }
 
-sub get_subnet {
-    my ( $self, %args ) = @_;
+#sub get_subnet {
+#    my ( $self, %args ) = @_;
+#
+#    my $tx = $ua->get(
+#        "$prot://$url$api/subnets/$args{id}/" => { 'token' => $args{token} } );
+#
+#    if ( $tx->success ) {
+#        return $tx->res->json('/data');
+#    }
+#    else {
+#        my $err = $tx->error;
+#        die
+#"Cannot get first free address $err->{code} response -> $err->{message}";
+#    }
+#}
 
-    my $tx = $ua->get(
-        "$prot://$url$api/subnets/$args{id}/" => { 'token' => $args{token} } );
+=head2 free_first_address
 
-    if ( $tx->success ) {
-        return $tx->res->json('/data');
-    }
-    else {
-        my $err = $tx->error;
-        die
-"Cannot get first free address $err->{code} response -> $err->{message}";
-    }
-}
+get the first free available ip on subnet.
 
+Requires named options (subnet) id and token.
+
+    my $first = $ipam->free_first_address(
+        token      => $token,
+        id         => 7
+    );
+
+Returns the first available ip.
+
+=cut
 #===  FUNCTION  ================================================================
 #         NAME: free_first_address
 #      PURPOSE: get 1st available address
@@ -753,14 +787,14 @@ sub free_first_address {
     my ( $self, %args ) = @_;
     my $token = $args{token};
     my $id    = $args{id};
-    my $first_free;
+#    my $first_free;
 
     my $tx = $ua->get(
         "$prot://$url$api/subnets/$id/first_free/" => { 'token' => $token } );
 
     if ( $tx->success ) {
-        $first_free = $tx->res->json('/data');
-        return $first_free;
+#        $first_free = $tx->res->json('/data');
+        return $tx->res->json('/data');
     }
     else {
         my $err = $tx->error;
