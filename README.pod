@@ -273,3 +273,32 @@ Requires named arguments token and id (section id).
 
 Returns an array reference of hashes containing the subnet info.
 
+=head2 get_subnet_addresses
+
+get all ip addresses in the chosen subnet.
+
+Requires named arguments token and id (subnet id).
+
+    my $sub_addresses = $ipam->get_subnet_addresses( token => $token, id => 8, );
+
+=head2 get_subnet_usage
+
+get info on usage of the specific subnet.
+
+Requires named arguments token and id (subnet id).
+
+    my $sub_usage = $ipam->get_subnet_usage( token => $token, id => 8, );
+
+=head2 free_first_address
+
+get the first free available ip on subnet.
+
+Requires named options (subnet) id and token.
+
+    my $first = $ipam->free_first_address(
+        token      => $token,
+        id         => 7
+    );
+
+Returns the first available ip.
+
