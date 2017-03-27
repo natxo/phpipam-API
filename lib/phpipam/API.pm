@@ -381,8 +381,7 @@ sub get_rights {
     my $tx = $ua->options( "$prot://$url$api/" => { 'token' => $token } );
 
     if ( $tx->success ) {
-        $rights = $tx->res->json('/data');
-        return $rights;
+        return $tx->res->json('/data')
     }
     else {
         my $err = $tx->error;
