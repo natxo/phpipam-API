@@ -390,7 +390,7 @@ sub get_rights {
     my $tx = $ua->options( "$prot://$url$api/" => { 'token' => $token } );
 
     if ( $tx->success ) {
-        return $tx->res->json('/data')
+        return $tx->res->json('/data');
     }
     else {
         my $err = $tx->error;
@@ -406,7 +406,7 @@ sub get_rights {
 
 =head2 get_sections
 
-Retrieve the sections available in the phpipam instance. See L<http://phpipam.net/api-documentation/#sections>.
+Retrieve info on a specific section. See L<http://phpipam.net/api-documentation/#sections>.
 
 Returns: array of hashes reference
 
@@ -444,6 +444,22 @@ sub get_sections {
 
     }
 }    ## --- end sub get_sections
+
+=head2 get_sections
+
+Retrieve the sections available in the phpipam instance. See L<http://phpipam.net/api-documentation/#sections>.
+
+Returns: hashes reference
+
+Requires: %args with token and either id or name.
+
+    my $section = $ipam->get_section( token => $token, id => $id );
+
+or
+
+    my $section = $ipam->get_section( token => $token, name => "name" );
+
+=cut
 
 #===  FUNCTION  ================================================================
 #         NAME: get_section
@@ -485,6 +501,21 @@ sub get_section {
     }
 
 }    ## --- end sub get_section
+
+=head2 add_section
+
+Add a section to phpipam.
+
+Requires %args with the as keys the parameters specified in L<https://phpipam.net/api/api_documentation/#sections>
+
+    my $newsection = $ipam->add_section(
+        token       => $token,
+        name        => "whatever",
+        description => "none at all",
+        showVLAN    => 1,
+    );
+
+=cut
 
 #===  FUNCTION  ================================================================
 #         NAME: add_section
@@ -548,6 +579,22 @@ sub del_section {
 
 }
 
+=head2 update_section
+
+Update a section to phpipam.
+
+Requires %args with the as keys the parameters specified in L<https://phpipam.net/api/api_documentation/#sections>, token and id are compulsory.
+
+    my $update = $ipam->update_section(
+        token      => $token,
+        id         => $section->{'id'},
+        strictMode => '1',
+        showVRF    => '1',
+        description => 'your little pony',
+    );
+
+=cut
+
 #===  FUNCTION  ================================================================
 #         NAME: update_section
 #      PURPOSE: update details section controller
@@ -581,6 +628,18 @@ sub update_section {
     }
 }
 
+=head2 get_subnets
+
+get available subnets in a section.
+
+Requires named arguments token and id (section id).
+
+    my $subnets =
+        $ipam->get_subnets( token => $token, id => 3,) ;
+
+Returns an array reference of hashes containing the subnet info.
+
+=cut
 #===  FUNCTION  ================================================================
 #         NAME: get_subnets
 #      PURPOSE: retrieve the available subnets in a section
