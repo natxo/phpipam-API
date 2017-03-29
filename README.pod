@@ -302,3 +302,20 @@ Requires named options (subnet) id and token.
 
 Returns the first available ip.
 
+=head2 search_subnet
+
+get subnet info. Requires token, subnet and mask info.
+
+    my $subnet = $ipam->search_subnet( $token, "192.168.0.0", "24" );
+
+=head2 add_ip
+
+add an ip to a subnet. Requires at least the token, the ip address and
+the subnetid.
+
+Other optional named parameters can be found in the address controller
+documenation L<https://phpipam.net/api/api_documentation#addresses>. Warning:
+the name of the paremeters is case sensitive.
+
+    $ipam->add_ip( token => $token, ip => $first, subnetId => "7", );
+
