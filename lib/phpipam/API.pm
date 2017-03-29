@@ -941,7 +941,7 @@ sub delete_ip {
 
 lookup addresses in phpipam database. Requires token and hostname
 
-my $name = $ipam->search_hostname( token => $token, hostname => $hostname);
+    my $name = $ipam->search_hostname( token => $token, hostname => $hostname);
 
 =cut
 
