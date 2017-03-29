@@ -888,9 +888,27 @@ sub add_ip {
 
 }
 
+=head2 delete_ip
+
+remove ip address from phpipam. Requires token en the ip id.
+
+You can get the ip id using search_ip. 
+
+    my $ipaddr = $ipam->search_ip(
+        token => $token,
+        ip => $first,
+    );
+    
+    if ( scalar @$ipaddr == 1 ) {
+        print "$first has id: $$ipaddr[0]->{id}\n";
+        $ipam->delete_ip( token => $token, ip_id => $$ipaddr[0]->{id} );
+    }
+
+=cut
+
 #===  FUNCTION  ================================================================
 #         NAME: delete_ip
-#      PURPOSE: remove ip from ipa
+#      PURPOSE: remove ip from phpipam
 #   PARAMETERS: token, ip_id
 #      RETURNS:
 #  DESCRIPTION:
@@ -918,6 +936,14 @@ sub delete_ip {
           . $tx->res->json->{message}, "\n";
     }
 }
+
+=head2 search_hostname
+
+lookup addresses in phpipam database. Requires token and hostname
+
+my $name = $ipam->search_hostname( token => $token, hostname => $hostname);
+
+=cut
 
 #===  FUNCTION  ================================================================
 #         NAME: search_hostname
