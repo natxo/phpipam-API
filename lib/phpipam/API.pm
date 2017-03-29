@@ -805,6 +805,13 @@ sub free_first_address {
 
 }    ## --- end sub free_first_address
 
+=head2 search_subnet
+
+get subnet info. Requires token, subnet and mask info.
+
+    my $subnet = $ipam->search_subnet( $token, "192.168.0.0", "24" );
+
+=cut
 #===  FUNCTION  ================================================================
 #         NAME: search_subnet
 #      PURPOSE: get subnet info
