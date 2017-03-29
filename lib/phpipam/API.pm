@@ -727,6 +727,7 @@ Requires named arguments token and id (subnet id).
     my $sub_usage = $ipam->get_subnet_usage( token => $token, id => 8, );
 
 =cut
+
 sub get_subnet_usage {
     my ( $self, %args ) = @_;
 
@@ -743,22 +744,6 @@ sub get_subnet_usage {
 
 }
 
-#sub get_subnet {
-#    my ( $self, %args ) = @_;
-#
-#    my $tx = $ua->get(
-#        "$prot://$url$api/subnets/$args{id}/" => { 'token' => $args{token} } );
-#
-#    if ( $tx->success ) {
-#        return $tx->res->json('/data');
-#    }
-#    else {
-#        my $err = $tx->error;
-#        die
-#"Cannot get first free address $err->{code} response -> $err->{message}";
-#    }
-#}
-
 =head2 free_first_address
 
 get the first free available ip on subnet.
@@ -773,6 +758,7 @@ Requires named options (subnet) id and token.
 Returns the first available ip.
 
 =cut
+
 #===  FUNCTION  ================================================================
 #         NAME: free_first_address
 #      PURPOSE: get 1st available address
@@ -787,13 +773,15 @@ sub free_first_address {
     my ( $self, %args ) = @_;
     my $token = $args{token};
     my $id    = $args{id};
-#    my $first_free;
+
+    #    my $first_free;
 
     my $tx = $ua->get(
         "$prot://$url$api/subnets/$id/first_free/" => { 'token' => $token } );
 
     if ( $tx->success ) {
-#        $first_free = $tx->res->json('/data');
+
+        #        $first_free = $tx->res->json('/data');
         return $tx->res->json('/data');
     }
     else {
@@ -812,6 +800,7 @@ get subnet info. Requires token, subnet and mask info.
     my $subnet = $ipam->search_subnet( $token, "192.168.0.0", "24" );
 
 =cut
+
 #===  FUNCTION  ================================================================
 #         NAME: search_subnet
 #      PURPOSE: get subnet info
@@ -849,6 +838,19 @@ sub search_subnet {
 #  Address controller
 #-------------------------------------------------------------------------------
 
+=head2 add_ip
+
+add an ip to a subnet. Requires at least the token, the ip address and
+the subnetid.
+
+Other optional named parameters can be found in the address controller
+documenation L<https://phpipam.net/api/api_documentation#addresses>. Warning:
+the name of the paremeters is case sensitive.
+
+    $ipam->add_ip( token => $token, ip => $first, subnetId => "7", );
+
+=cut
+
 #===  FUNCTION  ================================================================
 #         NAME: add_ip
 #      PURPOSE: add ip address to ipam
@@ -862,36 +864,25 @@ sub search_subnet {
 #===============================================================================
 sub add_ip {
     my ( $self, %args ) = @_;
-    my $token       = $args{token};
-    my $subnetid    = $args{subnetid};
-    my $ip          = $args{ip};
-    my $mask        = $args{mask};
-    my $hostname    = $args{hostname};
-    my $macaddr     = $args{macaddr};
-    my $owner       = $args{owner};
-    my $description = $args{description};
+    my $token = $args{token};
+
+    # cannot pass token as parameter in the controller
+    delete( $args{token} );
 
     die "I need both the ip address as the subnet id\n"
-      if !defined $ip or !defined $subnetid;
+      if !defined $args{ip}
+      or !defined $args{subnetId};
 
     my $tx = $ua->post(
-        "$prot://$url$api/addresses/" => { 'token' => $token } => json => {
-            'ip'          => $ip,
-            'subnetId'    => $subnetid,
-            'hostname'    => $hostname,
-            'mac'         => $macaddr,
-            'owner'       => $owner,
-            'description' => $description,
-        }
-    );
+        "$prot://$url$api/addresses/" => { 'token' => $token } => json =>
+          {%args} );
 
     if ( $tx->success ) {
-        print "$ip successfully added\n";
-        print $tx->res->content->headers->location, "\n";
+        print "$args{ip} successfully added\n";
     }
     else {
         my $err = $tx->error;
-        warn "cannot add $ip, error: $err->{code} " . $tx->res->json->{message},
+        warn "cannot add $args{ip}, error: $err->{code} " . $tx->res->json->{message},
           "\n";
     }
 
