@@ -882,7 +882,8 @@ sub add_ip {
     }
     else {
         my $err = $tx->error;
-        warn "cannot add $args{ip}, error: $err->{code} " . $tx->res->json->{message},
+        warn "cannot add $args{ip}, error: $err->{code} "
+          . $tx->res->json->{message},
           "\n";
     }
 
@@ -977,11 +978,24 @@ sub search_hostname {
     }
 }
 
+=head2 search_ip
+
+find ip details in phpipam. Requires token and ip.
+
+    my $ipaddr = $ipam->search_ip(
+        token => $token,
+        ip => $first,
+    );
+
+It returns an array ref of hashes
+
+=cut
+
 #===  FUNCTION  ================================================================
 #         NAME: search_ip
-#      PURPOSE: find ip details in ipam
+#      PURPOSE: find ip details in phpipam
 #   PARAMETERS: token, ip
-#      RETURNS: array of hashes ref
+#      RETURNS: array ref of hashes
 #  DESCRIPTION:
 #       THROWS: no exceptions
 #     COMMENTS: none
@@ -1007,6 +1021,14 @@ sub search_ip {
           . $tx->res->json->{message}, "\n";
     }
 }    ## --- end sub search_ip
+
+=head2 get_addrs_subnet
+
+get addresess on subnet. Requires token and subnet id. Returns an array ref of hashes.
+
+    my $addrs = $ipam->get_addrs_subnet( token => $token, subnetid => $id );
+
+=cut
 
 #===  FUNCTION  ================================================================
 #         NAME: get_addrs_subnet
@@ -1040,6 +1062,12 @@ sub get_addrs_subnet {
 
 }
 
+=head2 get_ip_tags
+
+retrieves all ip tags from phpipam. Requires token.
+
+=cut
+
 #===  FUNCTION  ================================================================
 #         NAME: get_ip_tags
 #      PURPOSE: retrieve all ip tags from phpipam
@@ -1058,7 +1086,9 @@ sub get_ip_tags {
       if !defined $token;
 
     my $tx =
-      $ua->get( "$prot://$url$api/addresses/tags/" => { 'token' => $token } );
+      $ua->get( "$prot://$url$api/tools/tags/" => { 'token' => $token } );
+
+ #      $ua->get( "$prot://$url$api/addresses/tags/" => { 'token' => $token } );
 
     if ( $tx->success ) {
         return $tx->res->json('/data');
@@ -1070,6 +1100,15 @@ sub get_ip_tags {
     }
 
 }
+
+=head2 get_ips_tag
+
+get ips assigned to tag id. Requires token and tag id. Returns an array
+ref of hashes
+
+    my $dhcp = $ipam->get_ips_tag( token => $token, tagid => "4",);
+
+=cut
 
 #===  FUNCTION  ================================================================
 #         NAME: get_ips_tag
@@ -1089,7 +1128,7 @@ sub get_ips_tag {
     die "I need both the the token and the tag id\n"
       if !defined $token or !defined $tagid;
 
-    my $tx = $ua->get( "$prot://$url$api/addresses/tags/$tagid/addresses/" =>
+    my $tx = $ua->get( "$prot://$url$api/tools/tags/$tagid/addresses/" =>
           { 'token' => $token } );
 
     if ( $tx->success ) {
