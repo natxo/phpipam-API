@@ -1066,6 +1066,8 @@ sub get_addrs_subnet {
 
 retrieves all ip tags from phpipam. Requires token.
 
+    my $tags = $ipam->get_ip_tags( token => $token );
+
 =cut
 
 #===  FUNCTION  ================================================================
