@@ -119,9 +119,6 @@ export the environment variable MOJO_USERAGENT_DEBUG=1 and run your perl script:
 
 You will be able to follow the whole http client/server conversation (it will post your encoded password so do not leave this variable enabled on your code.
 
-=head1 ACKNOWLEDGEMENTS
-
-Thanks to the developers of phpipam for a great product, the maintainers of the Perl language and Mojolicious for making this easily possible
 
 =head1 METHODS
 
@@ -553,6 +550,16 @@ sub add_section {
     }
 }
 
+=head2 del_section
+
+removes a section from phpipam. Requires token and id.
+
+    $ipam->del_section( token => $token, id => $id, );
+
+Returns a json message on error/success.
+
+=cut
+
 sub del_section {
     my ( $self, %args ) = @_;
     my $token = $args{token};
@@ -675,10 +682,6 @@ sub get_subnets {
     }
 
 }    ## --- end sub get_subnets
-
-#-------------------------------------------------------------------------------
-#  TODO: custom fields
-#-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
 #  Subnets controller
@@ -1224,5 +1227,11 @@ sub get_l2domains {
 
     }
 }    ## --- end sub get_l2domains
+
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to the developers of phpipam for a great product, the maintainers of the Perl language and Mojolicious for making this easily possible
+
+=cut
 
 1;
