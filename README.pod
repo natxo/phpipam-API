@@ -362,6 +362,8 @@ get addresess on subnet. Requires token and subnet id. Returns an array ref of h
 
 retrieves all ip tags from phpipam. Requires token.
 
+    my $tags = $ipam->get_ip_tags( token => $token );
+
 =head2 get_ips_tag
 
 get ips assigned to tag id. Requires token and tag id. Returns an array
