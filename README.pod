@@ -369,3 +369,16 @@ ref of hashes
 
     my $dhcp = $ipam->get_ips_tag( token => $token, tagid => "4",);
 
+=head2 get_vlans
+
+retrieve all vlans in phpipam. Requires token, returns array ref of hashes.
+
+    my $vlans = $ipam->get_vlans($token);
+
+=head2 get_l2domains
+
+Retrieves all vlan domains/l2domains. Requires token, returns an array
+ref of hashes
+
+    my $l2domains = $ipam->get_l2domains($token);
+

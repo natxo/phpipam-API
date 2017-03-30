@@ -1146,6 +1146,14 @@ sub get_ips_tag {
 #  Vlans controller
 #-------------------------------------------------------------------------------
 
+=head2 get_vlans
+
+retrieve all vlans in phpipam. Requires token, returns array ref of hashes.
+
+    my $vlans = $ipam->get_vlans($token);
+
+=cut
+
 sub get_vlans {
     my ( $self, $token ) = @_;
     my $vlans;
@@ -1187,6 +1195,15 @@ sub get_racks {
 #-------------------------------------------------------------------------------
 #  L2 domains controller
 #-------------------------------------------------------------------------------
+
+=head2 get_l2domains
+
+Retrieves all vlan domains/l2domains. Requires token, returns an array
+ref of hashes
+
+    my $l2domains = $ipam->get_l2domains($token);
+
+=cut
 
 sub get_l2domains {
     my ( $self, $token ) = @_;
