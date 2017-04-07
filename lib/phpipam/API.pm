@@ -131,6 +131,9 @@ use Mojo::UserAgent;
 # web browser
 my $ua = Mojo::UserAgent->new;
 
+# other useragent string
+$ua->transactor->name('perlbot/1.0 (https://github.com/natxo/phpipam-API)');
+
 # follow location headers
 $ua = $ua->max_redirects(5);
 
