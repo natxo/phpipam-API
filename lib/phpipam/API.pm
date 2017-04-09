@@ -696,7 +696,6 @@ Requires named arguments token and id (subnet id).
 
 =cut
 
-
 =head2 get_subnet_slaves
 
 get all slaves of a subnet
@@ -713,8 +712,7 @@ my $slaves = $ipam->get_subnet_slaves(
 sub get_subnet_slaves {
     my ( $self, %args ) = @_;
 
-    my $tx = $ua->get(
-        "$prot://$url$api/subnets/$args{id}/slaves/" =>
+    my $tx = $ua->get( "$prot://$url$api/subnets/$args{id}/slaves/" =>
           { 'token' => $args{token} } );
 
     if ( $tx->success ) {
@@ -723,10 +721,41 @@ sub get_subnet_slaves {
     else {
         my $err = $tx->error;
         die
-"Cannot get slaves of sunet with id $args{id}: $err->{code} response -> $err->{message}";
+"Cannot get slaves of subnet with id $args{id}: $err->{code} response -> $err->{message}";
     }
 
 }
+
+=head2 get_subnet_slaves_rec
+
+get all slaves of a subnet recursively
+
+Requires token and subnet id
+
+my $slaves = $ipam->get_subnet_slaves_rec(
+    $token => $token,
+    id     => $id,
+    );
+
+=cut
+
+sub get_subnet_slaves_rec {
+    my ( $self, %args ) = @_;
+
+    my $tx = $ua->get( "$prot://$url$api/subnets/$args{id}/slaves_recursive/" =>
+          { 'token' => $args{token} } );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die
+"Cannot get slaves recursively of subnet with id $args{id}: $err->{code} response -> $err->{message}";
+    }
+
+}
+
 sub get_subnet_addresses {
     my ( $self, %args ) = @_;
 

@@ -327,6 +327,17 @@ my $slaves = $ipam->get_subnet_slaves(
     id     => $id,
     );
 
+=head2 get_subnet_slaves_rec
+
+get all slaves of a subnet recursively
+
+Requires token and subnet id
+
+my $slaves = $ipam->get_subnet_slaves_rec(
+    $token => $token,
+    id     => $id,
+    );
+
 =head2 get_1st_sub_with_mask
 
 get the first subnet with $id and $mask.
