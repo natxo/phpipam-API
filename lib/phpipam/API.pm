@@ -216,17 +216,6 @@ This method retrieves the authentication api token. If the request is not succes
 
 =cut
 
-#===  FUNCTION  ===============================================================
-#
-#         NAME: get_token
-#      PURPOSE: retrieve api token
-#   PARAMETERS: none
-#      RETURNS: $token
-#  DESCRIPTION: see http://phpipam.net/api-documentation/#authentication
-#       THROWS: http://phpipam.net/api-documentation/#response_handling
-#     COMMENTS: dies if response not succesful
-#     SEE ALSO: n/a
-#==============================================================================
 sub get_token {
     my ( $self, %args ) = @_;
 
@@ -254,16 +243,6 @@ The method requires the $token parameter.
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: get_token_expiration
-#      PURPOSE: retrieve token expiration date
-#   PARAMETERS: $token
-#      RETURNS: $exp with expiration date
-#  DESCRIPTION: see http://phpipam.net/api-documentation/#authentication
-#       THROWS: http://phpipam.net/api-documentation/#response_handling
-#     COMMENTS: dies on http error
-#     SEE ALSO: n/a
-#===============================================================================
 sub get_token_expiration {
     my ( $self, $token ) = @_;
     my $exp;
@@ -295,16 +274,6 @@ The method requires the $token parameter.
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: get_all_users
-#      PURPOSE: get list of all users
-#   PARAMETERS: $token
-#      RETURNS: array ref of hashes
-#  DESCRIPTION: see http://phpipam.net/api-documentation/#authentication
-#       THROWS: http://phpipam.net/api-documentation/#response_handling
-#     COMMENTS: dies on http error, requires api rwa rights
-#     SEE ALSO: n/a
-#===============================================================================
 sub get_all_users {
     my ( $self, $token ) = @_;
     my $allusers;
@@ -334,16 +303,6 @@ The method requires the $token parameter.
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: delete_token
-#      PURPOSE: delete api session token
-#   PARAMETERS: $token
-#      RETURNS: array ref with http message
-#  DESCRIPTION: delete api session token
-#       THROWS: no exceptions
-#     COMMENTS: none
-#     SEE ALSO: n/a
-#===============================================================================
 sub delete_token {
     my ( $self, $token ) = @_;
     die "Need token to delete_token\n" unless defined $token;
@@ -374,16 +333,6 @@ Returns a hash ref with 2 keys, one for the permissions and one for controllers.
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: get_rights
-#      PURPOSE: get rights of logged in api user
-#   PARAMETERS: token
-#      RETURNS: hash reference with 2 keys: controllers and permissions
-#  DESCRIPTION: see name
-#       THROWS: no exceptions
-#     COMMENTS: none
-#     SEE ALSO: n/a
-#===============================================================================
 sub get_rights {
     my ( $self, $token ) = @_;
 
@@ -416,16 +365,6 @@ Requires: token
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: get_sections
-#      PURPOSE: retrieves sections
-#   PARAMETERS: $token
-#      RETURNS: $sections array of hashes ref
-#  DESCRIPTION: see comments
-#       THROWS: dies on http errors
-#     COMMENTS: http://phpipam.net/api-documentation/#sections
-#     SEE ALSO: n/a
-#===============================================================================
 sub get_sections {
     my ( $self, $token ) = @_;
     my $sections;
@@ -461,17 +400,6 @@ or
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: get_section
-#      PURPOSE: retrieve info on specific section
-#   PARAMETERS: $token and ( $id or $name )
-#   PARAMETERS: %args, token and (id or name) compulsary
-#      RETURNS: hash ref with section info
-#  DESCRIPTION: retrieve info on specific section
-#       THROWS: no exceptions
-#     COMMENTS: only one of $id or $name is allowed
-#     SEE ALSO: n/a
-#===============================================================================
 sub get_section {
     my ( $self, %args ) = @_;
     my $token = $args{token};
@@ -517,17 +445,6 @@ Requires %args with the as keys the parameters specified in L<https://phpipam.ne
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: add_section
-#      PURPOSE: add a section to phpipam
-#   PARAMETERS: %args with as keys the accepted parameters for the post
-#               method of the section conotroller
-#      RETURNS: json object with message info
-#  DESCRIPTION:
-#       THROWS: no exceptions
-#     COMMENTS: token and name are compulsory.
-#     SEE ALSO: n/a
-#===============================================================================
 sub add_section {
     my ( $self, %args ) = @_;
     my $token = $args{token};
@@ -605,17 +522,6 @@ Requires %args with the as keys the parameters specified in L<https://phpipam.ne
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: update_section
-#      PURPOSE: update details section controller
-#   PARAMETERS: %args with as keys the accepted parameters for the patch
-#               method of the section conotroller
-#      RETURNS: http success/error codes
-#  DESCRIPTION:
-#       THROWS: no exceptions
-#     COMMENTS: token and id are compulsory.
-#     SEE ALSO: n/a
-#===============================================================================
 sub update_section {
     my ( $sef, %args ) = @_;
     my $token = $args{token};
@@ -651,16 +557,6 @@ Returns an array reference of hashes containing the subnet info.
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: get_subnets
-#      PURPOSE: retrieve the available subnets in a section
-#   PARAMETERS: id => "section id", token => $token
-#      RETURNS: array ref with hashes containing the subnet info
-#  DESCRIPTION:
-#       THROWS: on error dies with http codes
-#     COMMENTS: none
-#     SEE ALSO: get_sections
-#===============================================================================
 sub get_subnets {
     my ( $self, %args ) = @_;
     my $id    = $args{id};
@@ -693,7 +589,7 @@ sub get_subnets {
 #-------------------------------------------------------------------------------
 #  TODO: get_subnet_slaves,
 #  get_subnet_slave_rec, 
-#  get_first_subnet, get_all_subnets, add_subnet, add_child_subnet,
+#  get_all_subnets, add_subnet, add_child_subnet,
 #  update_subnet, resize_subnet, split_subnet, set_subnet_perms,
 #  del_subnet, truncate_subnet, reset_subnet_perms
 #-------------------------------------------------------------------------------
@@ -766,17 +662,7 @@ Returns the first available ip.
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: free_first_address
-#      PURPOSE: get 1st available address
-#   PARAMETERS: id => 'subnet id', token => $token
-#      RETURNS: $first_free
-#  DESCRIPTION: get first free available ip on subnet
-#       THROWS: no exceptions
-#     COMMENTS: none
-#     SEE ALSO: n/a
-#===============================================================================
-sub free_first_address {
+sub get_free_first_address {
     my ( $self, %args ) = @_;
     my $token = $args{token};
     my $id    = $args{id};
@@ -865,16 +751,6 @@ get subnet info. Requires token, subnet and mask info.
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: search_subnet
-#      PURPOSE: get subnet info
-#   PARAMETERS: token, subnet, mask
-#      RETURNS: array ref with hash describing subnet
-#  DESCRIPTION: see name
-#       THROWS: no exceptions
-#     COMMENTS: none
-#     SEE ALSO: n/a
-#===============================================================================
 sub search_subnet {
     my ( $self, $token, $subnet, $mask ) = @_;
     die "Sorry, no token found\n" unless defined $token;
@@ -915,17 +791,6 @@ the name of the paremeters is case sensitive.
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: add_ip
-#      PURPOSE: add ip address to ipam
-#   PARAMETERS: token, subnetid, ip, hostname, mac, owner, description
-#      RETURNS: if successfully added, location header on stdout with ip
-#      info
-#  DESCRIPTION: see name
-#       THROWS: no exceptions
-#     COMMENTS:
-#     SEE ALSO: n/a
-#===============================================================================
 sub add_ip {
     my ( $self, %args ) = @_;
     my $token = $args{token};
@@ -971,16 +836,6 @@ You can get the ip id using search_ip.
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: delete_ip
-#      PURPOSE: remove ip from phpipam
-#   PARAMETERS: token, ip_id
-#      RETURNS:
-#  DESCRIPTION:
-#       THROWS: no exceptions
-#     COMMENTS: none
-#     SEE ALSO: n/a
-#===============================================================================
 sub delete_ip {
     my ( $self, %args ) = @_;
     my $token = $args{token};
@@ -1010,17 +865,6 @@ lookup addresses in phpipam database. Requires token and hostname
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: search_hostname
-#      PURPOSE: lookup hostname info if already availble in phpipam
-#   PARAMETERS: host => "hostname", token => $token
-#      RETURNS: array ref with hashes containing the host info, 404 if
-#      nothing found
-#  DESCRIPTION:
-#       THROWS: on error dies with http codes
-#     COMMENTS: none
-#     SEE ALSO: get_sections
-#===============================================================================
 sub search_hostname {
     my ( $self, %args ) = @_;
     my $token = $args{token};
@@ -1055,16 +899,6 @@ It returns an array ref of hashes
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: search_ip
-#      PURPOSE: find ip details in phpipam
-#   PARAMETERS: token, ip
-#      RETURNS: array ref of hashes
-#  DESCRIPTION:
-#       THROWS: no exceptions
-#     COMMENTS: none
-#     SEE ALSO: n/a
-#===============================================================================
 sub search_ip {
     my ( $self, %args ) = @_;
     my $token = $args{token};
@@ -1094,16 +928,6 @@ get addresess on subnet. Requires token and subnet id. Returns an array ref of h
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: get_addrs_subnet
-#      PURPOSE: get info addresses in subnet
-#   PARAMETERS: token, subnetid
-#      RETURNS: array of hashes
-#  DESCRIPTION:
-#       THROWS:
-#     COMMENTS: none
-#     SEE ALSO: n/a
-#===============================================================================
 sub get_addrs_subnet {
     my ( $self, %args ) = @_;
     my $token    = $args{token};
@@ -1134,16 +958,6 @@ retrieves all ip tags from phpipam. Requires token.
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: get_ip_tags
-#      PURPOSE: retrieve all ip tags from phpipam
-#   PARAMETERS: $token
-#      RETURNS: all ip tags
-#  DESCRIPTION:
-#       THROWS: no exceptions
-#     COMMENTS: not working yet, see https://github.com/phpipam/phpipam/issues/632
-#     SEE ALSO: n/a
-#===============================================================================
 sub get_ip_tags {
     my ( $self, %args ) = @_;
     my $token = $args{token};
@@ -1176,16 +990,6 @@ ref of hashes
 
 =cut
 
-#===  FUNCTION  ================================================================
-#         NAME: get_ips_tag
-#      PURPOSE: retrieve ips assigned to tag id
-#   PARAMETERS: token, tagid
-#      RETURNS: array ref with hashes
-#  DESCRIPTION:
-#       THROWS: http errors
-#     COMMENTS: none
-#     SEE ALSO: n/a
-#===============================================================================
 sub get_ips_tag {
     my ( $self, %args ) = @_;
     my $token = $args{token};
