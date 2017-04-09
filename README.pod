@@ -21,14 +21,16 @@ phpipam::API - Provides a Perl5 interface to the phpipam API (https://phpipam.ne
     # get sections
     my $sections = $ipam->get_sections( $token );
 
+
     # get vlans
     my $vlans = $ipam->get_vlans( $token );
 
     # get subnets
     my $subnets = $ipam->get_subnets( id => $section{id}, token => $token, );
 
-    # get first free ip address in subnet 
-    $my $first_free( token => $token, id => $subnet->{id} );
+    # get first free ip address in subnet
+    $my $first_free =
+      $ipam->get_free_first_address( token => $token, id => $subnet->{id} );
 
     # add ip to subnet
     $ipam->add_ip(
