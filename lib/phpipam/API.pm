@@ -647,13 +647,13 @@ sub get_subnet_usage {
 
 }
 
-=head2 free_first_address
+=head2 get_free_first_address
 
 get the first free available ip on subnet.
 
 Requires named options (subnet) id and token.
 
-    my $first = $ipam->free_first_address(
+    my $first = $ipam->get_free_first_address(
         token      => $token,
         id         => 7
     );
