@@ -338,6 +338,18 @@ my $slaves = $ipam->get_subnet_slaves_rec(
     id     => $id,
     );
 
+=head2 get_subnets_customfields
+
+get all custom fields in all subnets. Requires token.
+
+my $cfs = $ipam->get_subnets_customfields( token => $token);
+
+=head2 get_subnet_addresses
+
+gets all addresses in subnet. Requires token en subnet id
+
+    my $addrs = $ipam->get_subnet_addresses( token => $token, id => $id,);
+
 =head2 get_1st_sub_with_mask
 
 get the first subnet with $id and $mask.

@@ -589,8 +589,7 @@ sub get_subnets {
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-#  TODO: get_subnet_slaves,
-#  get_subnet_slave_rec,
+#  TODO: 
 #  add_subnet, add_child_subnet,
 #  update_subnet, resize_subnet, split_subnet, set_subnet_perms,
 #  del_subnet, truncate_subnet, reset_subnet_perms
@@ -755,6 +754,41 @@ sub get_subnet_slaves_rec {
     }
 
 }
+
+
+=head2 get_subnets_customfields
+
+get all custom fields in all subnets. Requires token.
+
+my $cfs = $ipam->get_subnets_customfields( token => $token);
+
+=cut
+
+sub get_subnets_customfields {
+    my ( $self, %args ) = @_;
+
+    my $tx = $ua->get( "$prot://$url$api/subnets/custom_fields/" =>
+          { 'token' => $args{token} } );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die
+"Cannot get all subnets custom fields: $err->{code} response -> $err->{message}";
+    }
+
+}
+
+
+=head2 get_subnet_addresses
+
+gets all addresses in subnet. Requires token en subnet id
+
+    my $addrs = $ipam->get_subnet_addresses( token => $token, id => $id,);
+
+=cut
 
 sub get_subnet_addresses {
     my ( $self, %args ) = @_;
