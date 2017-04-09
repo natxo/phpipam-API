@@ -328,6 +328,18 @@ Requires named arguments token, id and mask
         mask  => $mask,
     );
 
+=head2 get_all_subs_with_mask
+
+get all subnets with selected mask mask.
+
+Requires named arguments token, subnet id and mask
+
+    my $fist_sub = $ipam->get_all subs_with_mask(
+        token => $token,
+        id    => $id,
+        mask  => $mask,
+    );
+
 =head2 search_subnet
 
 get subnet info. Requires token, subnet and mask info.

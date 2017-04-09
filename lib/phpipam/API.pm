@@ -743,6 +743,38 @@ sub get_1st_sub_with_mask {
     }
 }
 
+=head2 get_all_subs_with_mask
+
+get all subnets with selected mask mask.
+
+Requires named arguments token, subnet id and mask
+
+    my $fist_sub = $ipam->get_all subs_with_mask(
+        token => $token,
+        id    => $id,
+        mask  => $mask,
+    );
+
+=cut
+
+sub get_all_subs_with_mask {
+    my ( $self, %args ) = @_;
+
+    my $tx = $ua->get(
+        "$prot://$url$api/subnets/$args{id}/all_subnets/$args{mask}/" =>
+          { 'token' => $args{token} } );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die
+"Cannot get all subnet with id $args{id} and mask $args{mask}: $err->{code} response -> $err->{message}";
+    }
+
+}
+
 =head2 search_subnet
 
 get subnet info. Requires token, subnet and mask info.
