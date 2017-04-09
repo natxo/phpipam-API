@@ -692,7 +692,7 @@ sub get_subnets {
 
 #-------------------------------------------------------------------------------
 #  TODO: get_subnet_slaves,
-#  get_subnet_slave_rec, get_subnet_address,
+#  get_subnet_slave_rec, 
 #  get_first_subnet, get_all_subnets, add_subnet, add_child_subnet,
 #  update_subnet, resize_subnet, split_subnet, set_subnet_perms,
 #  del_subnet, truncate_subnet, reset_subnet_perms
@@ -824,6 +824,37 @@ sub get_subnet_addresses {
         die "Cannot get subnet usage: $err->{code} response -> $err->{message}";
     }
 
+}
+
+
+=head2 get_1st_sub_with_mask
+
+get the first subnet with $id and $mask.
+
+Requires named arguments token, id and mask
+
+    my $fist_sub = $ipam->get_1st_sub_with_mask(
+        token => $token,
+        id    => $id,
+        mask  => $mask,
+    );
+
+=cut
+
+sub get_1st_sub_with_mask {
+    my ( $self, %args ) = @_;
+
+    my $tx = $ua->get(
+        "$prot://$url$api/subnets/$args{id}/first_subnet/$args{mask}/" =>
+          { 'token' => $args{token} } );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die "Cannot get 1st subnet with id $args{id} and mask $args{mask}: $err->{code} response -> $err->{message}";
+    }
 }
 
 =head2 search_subnet
