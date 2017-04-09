@@ -698,30 +698,31 @@ sub get_subnets {
 #  del_subnet, truncate_subnet, reset_subnet_perms
 #-------------------------------------------------------------------------------
 
-=head2 get_subnet_addresses
+=head2 get_subnet_by_id
 
-get all ip addresses in the chosen subnet.
+get info on subnet providing its id.
 
 Requires named arguments token and id (subnet id).
 
-    my $sub_addresses = $ipam->get_subnet_addresses( token => $token, id => 8, );
+    my $subnet = $ipam->get_subnet_by_id( token => $token, id => $id );
 
 =cut
 
-sub get_subnet_addresses {
+sub get_subnet_by_id {
     my ( $self, %args ) = @_;
+    my $token = $args{token};
+    my $id    = $args{id};
 
-    my $tx = $ua->get( "$prot://$url$api/subnets/$args{id}/addresses/" =>
-          { 'token' => $args{token} } );
+    my $tx = $ua->get(
+        "$prot://$url$api/subnets/$id/" => { 'token' => $args{token} } );
 
     if ( $tx->success ) {
         return $tx->res->json('/data');
     }
     else {
         my $err = $tx->error;
-        die "Cannot get subnet usage: $err->{code} response -> $err->{message}";
+        die "Cannot get subnet $id: $err->{code} response -> $err->{message}";
     }
-
 }
 
 =head2 get_subnet_usage
@@ -798,6 +799,32 @@ sub free_first_address {
     }
 
 }    ## --- end sub free_first_address
+
+=head2 get_subnet_addresses
+
+get all ip addresses in the chosen subnet.
+
+Requires named arguments token and id (subnet id).
+
+    my $sub_addresses = $ipam->get_subnet_addresses( token => $token, id => 8, );
+
+=cut
+
+sub get_subnet_addresses {
+    my ( $self, %args ) = @_;
+
+    my $tx = $ua->get( "$prot://$url$api/subnets/$args{id}/addresses/" =>
+          { 'token' => $args{token} } );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die "Cannot get subnet usage: $err->{code} response -> $err->{message}";
+    }
+
+}
 
 =head2 search_subnet
 
