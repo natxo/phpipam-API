@@ -316,6 +316,17 @@ Requires named arguments token and id (subnet id).
 
     my $sub_addresses = $ipam->get_subnet_addresses( token => $token, id => 8, );
 
+=head2 get_subnet_slaves
+
+get all slaves of a subnet
+
+Requires token and subnet id
+
+my $slaves = $ipam->get_subnet_slaves(
+    $token => $token,
+    id     => $id,
+    );
+
 =head2 get_1st_sub_with_mask
 
 get the first subnet with $id and $mask.

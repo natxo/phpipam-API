@@ -591,7 +591,7 @@ sub get_subnets {
 #-------------------------------------------------------------------------------
 #  TODO: get_subnet_slaves,
 #  get_subnet_slave_rec,
-#  get_all_subnets, add_subnet, add_child_subnet,
+#  add_subnet, add_child_subnet,
 #  update_subnet, resize_subnet, split_subnet, set_subnet_perms,
 #  del_subnet, truncate_subnet, reset_subnet_perms
 #-------------------------------------------------------------------------------
@@ -696,6 +696,37 @@ Requires named arguments token and id (subnet id).
 
 =cut
 
+
+=head2 get_subnet_slaves
+
+get all slaves of a subnet
+
+Requires token and subnet id
+
+my $slaves = $ipam->get_subnet_slaves(
+    $token => $token,
+    id     => $id,
+    );
+
+=cut
+
+sub get_subnet_slaves {
+    my ( $self, %args ) = @_;
+
+    my $tx = $ua->get(
+        "$prot://$url$api/subnets/$args{id}/slaves/" =>
+          { 'token' => $args{token} } );
+
+    if ( $tx->success ) {
+        return $tx->res->json('/data');
+    }
+    else {
+        my $err = $tx->error;
+        die
+"Cannot get slaves of sunet with id $args{id}: $err->{code} response -> $err->{message}";
+    }
+
+}
 sub get_subnet_addresses {
     my ( $self, %args ) = @_;
 
