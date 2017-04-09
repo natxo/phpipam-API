@@ -588,7 +588,7 @@ sub get_subnets {
 
 #-------------------------------------------------------------------------------
 #  TODO: get_subnet_slaves,
-#  get_subnet_slave_rec, 
+#  get_subnet_slave_rec,
 #  get_all_subnets, add_subnet, add_child_subnet,
 #  update_subnet, resize_subnet, split_subnet, set_subnet_perms,
 #  del_subnet, truncate_subnet, reset_subnet_perms
@@ -712,7 +712,6 @@ sub get_subnet_addresses {
 
 }
 
-
 =head2 get_1st_sub_with_mask
 
 get the first subnet with $id and $mask.
@@ -739,7 +738,8 @@ sub get_1st_sub_with_mask {
     }
     else {
         my $err = $tx->error;
-        die "Cannot get 1st subnet with id $args{id} and mask $args{mask}: $err->{code} response -> $err->{message}";
+        die
+"Cannot get 1st subnet with id $args{id} and mask $args{mask}: $err->{code} response -> $err->{message}";
     }
 }
 
