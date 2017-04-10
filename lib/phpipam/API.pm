@@ -900,6 +900,45 @@ sub search_subnet {
     }
 }
 
+=head2 add_subnet
+
+Add a subnet to phpipam.
+
+Requires %args with the as keys the parameters specified in L<https://phpipam.net/api/api_documentation/#subnet>, at least token, subnet, mask and sectionId.
+
+    my $newsubnet = $ipam->add_subnet(
+        token       => $token,
+        subnet      => "192.168.100.0",
+        mask        => "24",
+        sectionId   => "3",
+        description => "none at all",
+    );
+
+=cut
+
+sub add_subnet {
+    my ( $self, %args ) = @_;
+    my $token = $args{token};
+
+    # cannot pass token as parameter in the controller
+    delete( $args{token} );
+
+    my $tx = $ua->post(
+        "$prot://$url$api/subnets/" => { token => $token } => json =>
+          {%args} );
+
+    if ( $tx->success ) {
+        print "Subnet $args{subnet} " . $tx->res->{'message'} . "\n";
+        return $tx->res->content->asset->{content};
+    }
+    else {
+        my $err = $tx->error;
+        warn "Could not add subnet $err->{code}: "
+          . $tx->res->json->{'message'};
+        return $tx->res->json->{'message'};
+    }
+}
+
 #-------------------------------------------------------------------------------
 #  Address controller
 #-------------------------------------------------------------------------------

@@ -380,6 +380,20 @@ get subnet info. Requires token, subnet and mask info.
 
     my $subnet = $ipam->search_subnet( $token, "192.168.0.0", "24" );
 
+=head2 add_subnet
+
+Add a subnet to phpipam.
+
+Requires %args with the as keys the parameters specified in L<https://phpipam.net/api/api_documentation/#subnet>, at least token, subnet, mask and sectionId.
+
+    my $newsubnet = $ipam->add_subnet(
+        token       => $token,
+        subnet      => "192.168.100.0",
+        mask        => "24",
+        sectionId   => "3",
+        description => "none at all",
+    );
+
 =head2 add_ip
 
 add an ip to a subnet. Requires at least the token, the ip address and
