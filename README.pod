@@ -394,6 +394,20 @@ Requires %args with the as keys the parameters specified in L<https://phpipam.ne
         description => "none at all",
     );
 
+=head2 update_subnet
+
+Update a subnet in phpipam.
+
+Requires %args with the as keys the parameters specified in L<https://phpipam.net/api/api_documentation/#subnet>
+
+=head2 resize_subnet
+
+resize an existing subnet in phpipam.
+
+Requires token, subnet id and mask.
+
+    my $resized = $ipam->resize_subnet( token => $token, id => 18, mask => 29,);
+
 =head2 add_ip
 
 add an ip to a subnet. Requires at least the token, the ip address and

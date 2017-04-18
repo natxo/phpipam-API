@@ -591,7 +591,7 @@ sub get_subnets {
 #-------------------------------------------------------------------------------
 #  TODO: 
 #  , add_child_subnet,
-#  update_subnet, resize_subnet, split_subnet, set_subnet_perms,
+#   resize_subnet, split_subnet, set_subnet_perms,
 #  del_subnet, truncate_subnet, reset_subnet_perms
 #-------------------------------------------------------------------------------
 
@@ -939,6 +939,14 @@ sub add_subnet {
     }
 }
 
+=head2 update_subnet
+
+Update a subnet in phpipam.
+
+Requires %args with the as keys the parameters specified in L<https://phpipam.net/api/api_documentation/#subnet>
+
+=cut
+
 sub update_subnet {
     my ( $sef, %args ) = @_;
     my $token = $args{token};
@@ -955,6 +963,38 @@ sub update_subnet {
     else {
         my $err = $tx->error;
         warn "Could not update subnet $err->{code}: "
+          . $tx->res->json->{'message'};
+        return $tx->res->json->{'message'};
+    }
+}
+
+=head2 resize_subnet
+
+resize an existing subnet in phpipam.
+
+Requires token, subnet id and mask.
+
+    my $resized = $ipam->resize_subnet( token => $token, id => 18, mask => 29,);
+
+=cut
+
+sub resize_subnet {
+    my ( $sef, %args ) = @_;
+    my $token = $args{token};
+    die "Need subnet id and mask to resize the subnet\n" unless defined $args{id} && defined $args{mask};
+
+    # cannot pass token as parameter in the controller
+    delete( $args{token} );
+
+    my $tx = $ua->patch(
+        "$prot://$url$api/subnets/$args{id}/resize/" => { token => $token } =>
+          json => { %args, } );
+    if ( $tx->success ) {
+        return $tx->res->content->asset->{content};
+    }
+    else {
+        my $err = $tx->error;
+        warn "Could not resize subnet $err->{code}: "
           . $tx->res->json->{'message'};
         return $tx->res->json->{'message'};
     }
