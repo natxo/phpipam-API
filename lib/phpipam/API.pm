@@ -590,7 +590,7 @@ sub get_subnets {
 
 #-------------------------------------------------------------------------------
 #  TODO: 
-#  add_subnet, add_child_subnet,
+#  , add_child_subnet,
 #  update_subnet, resize_subnet, split_subnet, set_subnet_perms,
 #  del_subnet, truncate_subnet, reset_subnet_perms
 #-------------------------------------------------------------------------------
@@ -934,6 +934,27 @@ sub add_subnet {
     else {
         my $err = $tx->error;
         warn "Could not add subnet $err->{code}: "
+          . $tx->res->json->{'message'};
+        return $tx->res->json->{'message'};
+    }
+}
+
+sub update_subnet {
+    my ( $sef, %args ) = @_;
+    my $token = $args{token};
+    #
+    # cannot pass token as parameter in the controller
+    delete( $args{token} );
+
+    my $tx = $ua->patch(
+        "$prot://$url$api/subnets/" => { token => $token } => json =>
+          { %args, } );
+    if ( $tx->success ) {
+        return $tx->res->content->asset->{content};
+    }
+    else {
+        my $err = $tx->error;
+        warn "Could not update subnet $err->{code}: "
           . $tx->res->json->{'message'};
         return $tx->res->json->{'message'};
     }
