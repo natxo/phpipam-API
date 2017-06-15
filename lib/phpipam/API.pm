@@ -208,7 +208,9 @@ sub new {
 #  Authentication user controller
 #-------------------------------------------------------------------------------
 
-=head2 get_token
+=head2 TOKEN
+
+=head3 B<get_token>
 
 See L<http://phpipam.net/api-documentation/#authentication> 
 
@@ -235,7 +237,7 @@ sub get_token {
     }
 }
 
-=head2 get_token_expiration
+=head3 B<get_token_expiration>
 
     my $exp = $ipam->get_token_expiration( $token );
 
@@ -264,7 +266,9 @@ sub get_token_expiration {
     }
 }    ## --- end sub get_token_expiration
 
-=head2 get_all_users
+=head2 USERS
+
+=head3 B<get_all_users>
 
 Retrieve a list of all users (requires rwa permissions on the api)
 
@@ -293,7 +297,7 @@ sub get_all_users {
     }
 }    ## --- end sub get_all_users
 
-=head2 delete_token
+=head3 B<delete_token>
 
 Remove the api token.
 
@@ -325,7 +329,9 @@ sub delete_token {
 #  Authorization (permissions)
 #-------------------------------------------------------------------------------
 
-=head2 get_rights
+=head2 AUTHORIZATION
+
+=head3 B<get_rights>
 
 Retrieve the rights of the logged in api user
 
@@ -354,16 +360,21 @@ sub get_rights {
 #-------------------------------------------------------------------------------
 #  Sections controller
 #-------------------------------------------------------------------------------
+=head2 SECTIONS
 
-=head2 get_sections
+=head3 B<get_sections>
 
-Retrieve info on a specific section. See L<http://phpipam.net/api-documentation/#sections>.
+Retrieve the sections available in the phpipam instance. See L<http://phpipam.net/api-documentation/#sections>.
 
-Returns: array of hashes reference
+Returns: hashes reference
 
-Requires: token
+Requires: %args with token and either id or name.
 
-    my $section = $ipam->get_sections( $token );
+    my $section = $ipam->get_section( token => $token, id => $id );
+
+or
+
+    my $section = $ipam->get_section( token => $token, name => "name" );
 
 =cut
 
@@ -386,19 +397,15 @@ sub get_sections {
     }
 }    ## --- end sub get_sections
 
-=head2 get_sections
+=head3 B<get_section>
 
-Retrieve the sections available in the phpipam instance. See L<http://phpipam.net/api-documentation/#sections>.
+Retrieve info on a specific section. See L<http://phpipam.net/api-documentation/#sections>.
 
-Returns: hashes reference
+Returns: array of hashes reference
 
-Requires: %args with token and either id or name.
+Requires: token
 
-    my $section = $ipam->get_section( token => $token, id => $id );
-
-or
-
-    my $section = $ipam->get_section( token => $token, name => "name" );
+    my $section = $ipam->get_sections( $token );
 
 =cut
 
@@ -432,7 +439,7 @@ sub get_section {
 
 }    ## --- end sub get_section
 
-=head2 add_section
+=head3 B<add_section>
 
 Add a section to phpipam.
 
@@ -472,7 +479,7 @@ sub add_section {
     }
 }
 
-=head2 del_section
+=head3 B<del_section>
 
 removes a section from phpipam. Requires token and id.
 
@@ -508,7 +515,7 @@ sub del_section {
 
 }
 
-=head2 update_section
+=head3 B<update_section>
 
 Update a section to phpipam.
 
@@ -546,7 +553,19 @@ sub update_section {
     }
 }
 
-=head2 get_subnets
+#-------------------------------------------------------------------------------
+#  Subnets controller
+#-------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
+#  TODO: 
+#  , add_child_subnet,
+#   resize_subnet, split_subnet, set_subnet_perms,
+#  del_subnet, truncate_subnet, reset_subnet_perms
+#-------------------------------------------------------------------------------
+=head2 SUBNETS
+
+=head3 B<get_subnets>
 
 get available subnets in a section.
 
@@ -584,18 +603,7 @@ sub get_subnets {
 
 }    ## --- end sub get_subnets
 
-#-------------------------------------------------------------------------------
-#  Subnets controller
-#-------------------------------------------------------------------------------
-
-#-------------------------------------------------------------------------------
-#  TODO: 
-#  , add_child_subnet,
-#   resize_subnet, split_subnet, set_subnet_perms,
-#  del_subnet, truncate_subnet, reset_subnet_perms
-#-------------------------------------------------------------------------------
-
-=head2 get_subnet_by_id
+=head3 B<get_subnet_by_id>
 
 get info on subnet providing its id.
 
@@ -622,7 +630,7 @@ sub get_subnet_by_id {
     }
 }
 
-=head2 get_subnet_usage
+=head3 B<get_subnet_usage>
 
 get info on usage of the specific subnet.
 
@@ -648,7 +656,7 @@ sub get_subnet_usage {
 
 }
 
-=head2 get_free_first_address
+=head3 B<get_free_first_address>
 
 get the first free available ip on subnet.
 
@@ -685,7 +693,7 @@ sub get_free_first_address {
 
 }    ## --- end sub free_first_address
 
-=head2 get_subnet_addresses
+=head3 B<get_subnet_addresses>
 
 get all ip addresses in the chosen subnet.
 
@@ -695,7 +703,7 @@ Requires named arguments token and id (subnet id).
 
 =cut
 
-=head2 get_subnet_slaves
+=head3 B<get_subnet_slaves>
 
 get all slaves of a subnet
 
@@ -725,7 +733,7 @@ sub get_subnet_slaves {
 
 }
 
-=head2 get_subnet_slaves_rec
+=head3 B<get_subnet_slaves_rec>
 
 get all slaves of a subnet recursively
 
@@ -756,7 +764,7 @@ sub get_subnet_slaves_rec {
 }
 
 
-=head2 get_subnets_customfields
+=head3 B<get_subnets_customfields>
 
 get all custom fields in all subnets. Requires token.
 
@@ -782,7 +790,7 @@ sub get_subnets_customfields {
 }
 
 
-=head2 get_subnet_addresses
+=head3 B<get_subnet_addresses>
 
 gets all addresses in subnet. Requires token en subnet id
 
@@ -806,7 +814,7 @@ sub get_subnet_addresses {
 
 }
 
-=head2 get_1st_sub_with_mask
+=head3 B<get_1st_sub_with_mask>
 
 get the first subnet with $id and $mask.
 
@@ -837,7 +845,7 @@ sub get_1st_sub_with_mask {
     }
 }
 
-=head2 get_all_subs_with_mask
+=head3 B<get_all_subs_with_mask>
 
 get all subnets with selected mask mask.
 
@@ -869,7 +877,7 @@ sub get_all_subs_with_mask {
 
 }
 
-=head2 search_subnet
+=head3 B<search_subnet>
 
 get subnet info. Requires token, subnet and mask info.
 
@@ -900,7 +908,7 @@ sub search_subnet {
     }
 }
 
-=head2 add_subnet
+=head3 B<add_subnet>
 
 Add a subnet to phpipam.
 
@@ -939,7 +947,7 @@ sub add_subnet {
     }
 }
 
-=head2 update_subnet
+=head3 B<update_subnet>
 
 Update a subnet in phpipam.
 
@@ -968,7 +976,7 @@ sub update_subnet {
     }
 }
 
-=head2 resize_subnet
+=head3 B<resize_subnet>
 
 resize an existing subnet in phpipam.
 
@@ -1004,7 +1012,8 @@ sub resize_subnet {
 #  Address controller
 #-------------------------------------------------------------------------------
 
-=head2 add_ip
+=head2 ADDRESS CONTROLLER
+=head3 B<add_ip>
 
 add an ip to a subnet. Requires at least the token, the ip address and
 the subnetid.
@@ -1044,7 +1053,7 @@ sub add_ip {
 
 }
 
-=head2 delete_ip
+=head3 B<delete_ip>
 
 remove ip address from phpipam. Requires token en the ip id.
 
@@ -1083,7 +1092,7 @@ sub delete_ip {
     }
 }
 
-=head2 search_hostname
+=head3 B<search_hostname>
 
 lookup addresses in phpipam database. Requires token and hostname
 
@@ -1112,7 +1121,7 @@ sub search_hostname {
     }
 }
 
-=head2 search_ip
+=head3 B<search_ip>
 
 find ip details in phpipam. Requires token and ip.
 
@@ -1146,7 +1155,7 @@ sub search_ip {
     }
 }    ## --- end sub search_ip
 
-=head2 get_addrs_subnet
+=head3 B<get_addrs_subnet>
 
 get addresess on subnet. Requires token and subnet id. Returns an array ref of hashes.
 
@@ -1176,7 +1185,7 @@ sub get_addrs_subnet {
 
 }
 
-=head2 get_ip_tags
+=head3 B<get_ip_tags>
 
 retrieves all ip tags from phpipam. Requires token.
 
@@ -1207,7 +1216,7 @@ sub get_ip_tags {
 
 }
 
-=head2 get_ips_tag
+=head3 B<get_ips_tag>
 
 get ips assigned to tag id. Requires token and tag id. Returns an array
 ref of hashes
@@ -1242,7 +1251,9 @@ sub get_ips_tag {
 #  Vlans controller
 #-------------------------------------------------------------------------------
 
-=head2 get_vlans
+=head2 VLAN CONTROLLER
+
+=head3 B<get_vlans>
 
 retrieve all vlans in phpipam. Requires token, returns array ref of hashes.
 
@@ -1292,7 +1303,9 @@ sub get_racks {
 #  L2 domains controller
 #-------------------------------------------------------------------------------
 
-=head2 get_l2domains
+=head2 L2 DOMAINS CONTROLLER
+
+=head3 B<get_l2domains>
 
 Retrieves all vlan domains/l2domains. Requires token, returns an array
 ref of hashes

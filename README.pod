@@ -165,7 +165,9 @@ password: self explanatory;
 
 =back
 
-=head2 get_token
+=head2 TOKEN
+
+=head3 B<get_token>
 
 See L<http://phpipam.net/api-documentation/#authentication>
 
@@ -173,7 +175,7 @@ This method retrieves the authentication api token. If the request is not succes
 
     my $token = $ipam->get_token;
 
-=head2 get_token_expiration
+=head3 B<get_token_expiration>
 
     my $exp = $ipam->get_token_expiration( $token );
 
@@ -181,7 +183,9 @@ This method returns the token expiration date
 
 The method requires the $token parameter.
 
-=head2 get_all_users
+=head2 USERS
+
+=head3 B<get_all_users>
 
 Retrieve a list of all users (requires rwa permissions on the api)
 
@@ -191,7 +195,7 @@ Returns an array reference of hashes with the user info.
 
 The method requires the $token parameter.
 
-=head2 delete_token
+=head3 B<delete_token>
 
 Remove the api token.
 
@@ -201,7 +205,9 @@ If assigned to a scalar variable, it returns a json string with info.
 
 The method requires the $token parameter.
 
-=head2 get_rights
+=head2 AUTHORIZATION
+
+=head3 B<get_rights>
 
 Retrieve the rights of the logged in api user
 
@@ -209,17 +215,7 @@ Retrieve the rights of the logged in api user
 
 Returns a hash ref with 2 keys, one for the permissions and one for controllers.
 
-=head2 get_sections
-
-Retrieve info on a specific section. See L<http://phpipam.net/api-documentation/#sections>.
-
-Returns: array of hashes reference
-
-Requires: token
-
-    my $section = $ipam->get_sections( $token );
-
-=head2 get_sections
+=head3 B<get_sections>
 
 Retrieve the sections available in the phpipam instance. See L<http://phpipam.net/api-documentation/#sections>.
 
@@ -233,7 +229,17 @@ or
 
     my $section = $ipam->get_section( token => $token, name => "name" );
 
-=head2 add_section
+=head3 B<get_section>
+
+Retrieve info on a specific section. See L<http://phpipam.net/api-documentation/#sections>.
+
+Returns: array of hashes reference
+
+Requires: token
+
+    my $section = $ipam->get_sections( $token );
+
+=head3 B<add_section>
 
 Add a section to phpipam.
 
@@ -246,7 +252,7 @@ Requires %args with the as keys the parameters specified in L<https://phpipam.ne
         showVLAN    => 1,
     );
 
-=head2 del_section
+=head3 B<del_section>
 
 removes a section from phpipam. Requires token and id.
 
@@ -254,7 +260,7 @@ removes a section from phpipam. Requires token and id.
 
 Returns a json message on error/success.
 
-=head2 update_section
+=head3 B<update_section>
 
 Update a section to phpipam.
 
@@ -268,7 +274,7 @@ Requires %args with the as keys the parameters specified in L<https://phpipam.ne
         description => 'your little pony',
     );
 
-=head2 get_subnets
+=head3 B<get_subnets>
 
 get available subnets in a section.
 
@@ -279,7 +285,7 @@ Requires named arguments token and id (section id).
 
 Returns an array reference of hashes containing the subnet info.
 
-=head2 get_subnet_by_id
+=head3 B<get_subnet_by_id>
 
 get info on subnet providing its id.
 
@@ -287,7 +293,7 @@ Requires named arguments token and id (subnet id).
 
     my $subnet = $ipam->get_subnet_by_id( token => $token, id => $id );
 
-=head2 get_subnet_usage
+=head3 B<get_subnet_usage>
 
 get info on usage of the specific subnet.
 
@@ -295,7 +301,7 @@ Requires named arguments token and id (subnet id).
 
     my $sub_usage = $ipam->get_subnet_usage( token => $token, id => 8, );
 
-=head2 get_free_first_address
+=head3 B<get_free_first_address>
 
 get the first free available ip on subnet.
 
@@ -308,7 +314,7 @@ Requires named options (subnet) id and token.
 
 Returns the first available ip.
 
-=head2 get_subnet_addresses
+=head3 B<get_subnet_addresses>
 
 get all ip addresses in the chosen subnet.
 
@@ -316,7 +322,7 @@ Requires named arguments token and id (subnet id).
 
     my $sub_addresses = $ipam->get_subnet_addresses( token => $token, id => 8, );
 
-=head2 get_subnet_slaves
+=head3 B<get_subnet_slaves>
 
 get all slaves of a subnet
 
@@ -327,7 +333,7 @@ my $slaves = $ipam->get_subnet_slaves(
     id     => $id,
     );
 
-=head2 get_subnet_slaves_rec
+=head3 B<get_subnet_slaves_rec>
 
 get all slaves of a subnet recursively
 
@@ -338,19 +344,19 @@ my $slaves = $ipam->get_subnet_slaves_rec(
     id     => $id,
     );
 
-=head2 get_subnets_customfields
+=head3 B<get_subnets_customfields>
 
 get all custom fields in all subnets. Requires token.
 
 my $cfs = $ipam->get_subnets_customfields( token => $token);
 
-=head2 get_subnet_addresses
+=head3 B<get_subnet_addresses>
 
 gets all addresses in subnet. Requires token en subnet id
 
     my $addrs = $ipam->get_subnet_addresses( token => $token, id => $id,);
 
-=head2 get_1st_sub_with_mask
+=head3 B<get_1st_sub_with_mask>
 
 get the first subnet with $id and $mask.
 
@@ -362,7 +368,7 @@ Requires named arguments token, id and mask
         mask  => $mask,
     );
 
-=head2 get_all_subs_with_mask
+=head3 B<get_all_subs_with_mask>
 
 get all subnets with selected mask mask.
 
@@ -374,13 +380,13 @@ Requires named arguments token, subnet id and mask
         mask  => $mask,
     );
 
-=head2 search_subnet
+=head3 B<search_subnet>
 
 get subnet info. Requires token, subnet and mask info.
 
     my $subnet = $ipam->search_subnet( $token, "192.168.0.0", "24" );
 
-=head2 add_subnet
+=head3 B<add_subnet>
 
 Add a subnet to phpipam.
 
@@ -394,13 +400,13 @@ Requires %args with the as keys the parameters specified in L<https://phpipam.ne
         description => "none at all",
     );
 
-=head2 update_subnet
+=head3 B<update_subnet>
 
 Update a subnet in phpipam.
 
 Requires %args with the as keys the parameters specified in L<https://phpipam.net/api/api_documentation/#subnet>
 
-=head2 resize_subnet
+=head3 B<resize_subnet>
 
 resize an existing subnet in phpipam.
 
@@ -408,7 +414,8 @@ Requires token, subnet id and mask.
 
     my $resized = $ipam->resize_subnet( token => $token, id => 18, mask => 29,);
 
-=head2 add_ip
+=head2 ADDRESS CONTROLLER
+=head3 B<add_ip>
 
 add an ip to a subnet. Requires at least the token, the ip address and
 the subnetid.
@@ -419,7 +426,7 @@ the name of the paremeters is case sensitive.
 
     $ipam->add_ip( token => $token, ip => $first, subnetId => "7", );
 
-=head2 delete_ip
+=head3 B<delete_ip>
 
 remove ip address from phpipam. Requires token en the ip id.
 
@@ -435,13 +442,13 @@ You can get the ip id using search_ip.
         $ipam->delete_ip( token => $token, ip_id => $$ipaddr[0]->{id} );
     }
 
-=head2 search_hostname
+=head3 B<search_hostname>
 
 lookup addresses in phpipam database. Requires token and hostname
 
     my $name = $ipam->search_hostname( token => $token, hostname => $hostname);
 
-=head2 search_ip
+=head3 B<search_ip>
 
 find ip details in phpipam. Requires token and ip.
 
@@ -452,32 +459,36 @@ find ip details in phpipam. Requires token and ip.
 
 It returns an array ref of hashes
 
-=head2 get_addrs_subnet
+=head3 B<get_addrs_subnet>
 
 get addresess on subnet. Requires token and subnet id. Returns an array ref of hashes.
 
     my $addrs = $ipam->get_addrs_subnet( token => $token, subnetid => $id );
 
-=head2 get_ip_tags
+=head3 B<get_ip_tags>
 
 retrieves all ip tags from phpipam. Requires token.
 
     my $tags = $ipam->get_ip_tags( token => $token );
 
-=head2 get_ips_tag
+=head3 B<get_ips_tag>
 
 get ips assigned to tag id. Requires token and tag id. Returns an array
 ref of hashes
 
     my $dhcp = $ipam->get_ips_tag( token => $token, tagid => "4",);
 
-=head2 get_vlans
+=head2 VLAN CONTROLLER
+
+=head3 B<get_vlans>
 
 retrieve all vlans in phpipam. Requires token, returns array ref of hashes.
 
     my $vlans = $ipam->get_vlans($token);
 
-=head2 get_l2domains
+=head2 L2 DOMAINS CONTROLLER
+
+=head3 B<get_l2domains>
 
 Retrieves all vlan domains/l2domains. Requires token, returns an array
 ref of hashes
