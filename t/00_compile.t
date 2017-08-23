@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+
 use Data::Dumper;
 
 use Test::More;
@@ -11,7 +12,7 @@ use_ok 'phpipam::API';
 # verify we can load via require pragma
 require_ok('phpipam::API');
 
-
+# create object
 my $ipam = phpipam::API->new(
     proto    => 'http',
     url      => 'host.domain.tld',
