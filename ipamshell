@@ -51,10 +51,85 @@ my $token = undef;
 
 use base qw(Term::Shell);
 
-my @controllers = qw/ sections subnets folders vlans addresses l2domains vrfs devices tools/;
+my @controllers =
+  qw/ sections subnets folders vlans addresses l2domains vrfs devices tools/;
 
 sub prompt_str {
-    "ipamsh> ";
+    my $self = shift;
+    return $self->{'prompt'};
+}
+
+sub base {
+    my ($self) = @_;
+    unless ( $self->{'base'} ) {
+        $self->{'base'} = "root";
+    }
+}
+
+sub update_prompt {
+    my ($self) = @_;
+    my $base = $self->base();
+    $self->{'prompt'} = "$base > ";
+    return;
+}
+
+sub help_ls {
+    << "END";
+ls 
+    Outputs available ipam controllers
+END
+}
+
+sub run_ls {
+    my ($self) = @_;
+    if ( $self->{base} eq "root" ) {
+        for my $controller (@controllers) {
+            print "$controller\n";
+        }
+
+    }
+    else {
+        my %actions = ( 
+            vlans => \&getvlans,
+            sections => \&getsections,
+        );
+        $actions{$self->{base}}->();
+            
+    }
+}
+
+sub run_pwd {
+    my ($self) = @_;
+    print $self->base(), "\n";
+    $self->update_prompt( $self->base );
+    return;
+}
+
+sub help_cd {
+    << "END";
+cd <controller>:
+    enter the <controller> context. You may use tab completion to find available controllers.
+    Without arguments, cd goes back to the root context.
+END
+}
+
+sub run_cd {
+    my ( $self, $controller ) = @_;
+    if ( ! $controller) {
+        $controller = "root";
+    }
+
+    # update base
+    $self->{'base'} = $controller;
+
+    # update prompt
+    $self->update_prompt;
+    return;
+}
+
+sub comp_cd {
+    my ( $self, $controller ) = @_;
+    $self->completions( $controller, \@controllers );
 }
 
 sub run_show_token {
@@ -64,7 +139,6 @@ sub run_show_token {
 
 sub run_logoff {
     my $self = shift;
-    my $token = $token;
 
     eval { $ipam->delete_token($token); };
     if ($@) {
@@ -74,7 +148,7 @@ sub run_logoff {
     exit 0;
 }
 
-sub run_get_sections {
+sub getsections {
     my $sections = eval { $ipam->get_sections($token); };
     if ($@) {
         print "Something went wrong getting the sections info: " . $@;
@@ -92,12 +166,11 @@ sub run_get_sections {
 
 }
 
-sub run_get_vlans {
-    my $vlans = eval { $ipam->get_vlans( $token ); };
+sub getvlans {
+    my $vlans = eval { $ipam->get_vlans($token); };
     if ($@) {
         print "Something went wrong getting the sections info: " . $@;
     }
-    print Dumper $vlans;
     if ( scalar(@$vlans) > 0 ) {
         print "Found " . scalar @$vlans . " vlan[s]:\n";
 
@@ -112,6 +185,12 @@ sub run_get_vlans {
 }
 
 sub init {
+    my $self = shift;
+
+    # update the prompt here or it will not work!!
+    $self->update_prompt();
+
+    # login ipam
     $token = eval { $ipam->get_token; };
     if ($@) {
         print "something went wrong\n";
@@ -120,7 +199,7 @@ sub init {
 }
 
 sub fini {
-#    run_logoff();
+    #    run_logoff();
     print "\n";
 }
 
