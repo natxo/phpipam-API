@@ -47,24 +47,29 @@ my $ipam = phpipam::API->new(
     password => $pass,
 );
 
-my $token = eval { $ipam->get_token; };
-if ($@) {
-    print "something went wrong\n";
-    print "$@\n";
-}
+my $token = undef;
 
 use base qw(Term::Shell);
+
+my @controllers = qw/ sections subnets folders vlans addresses l2domains vrfs devices tools/;
 
 sub prompt_str {
     "ipamsh> ";
 }
 
 sub run_show_token {
+    my $self = shift;
     print "Authentication token: " . $token, "\n";
 }
 
 sub run_logoff {
-    print $ipam->delete_token($token);
+    my $self = shift;
+    my $token = $token;
+
+    eval { $ipam->delete_token($token); };
+    if ($@) {
+        print $@;
+    }
     print "okay bye\n";
     exit 0;
 }
@@ -87,8 +92,36 @@ sub run_get_sections {
 
 }
 
+sub run_get_vlans {
+    my $vlans = eval { $ipam->get_vlans( $token ); };
+    if ($@) {
+        print "Something went wrong getting the sections info: " . $@;
+    }
+    print Dumper $vlans;
+    if ( scalar(@$vlans) > 0 ) {
+        print "Found " . scalar @$vlans . " vlan[s]:\n";
+
+        for my $vlan (@$vlans) {
+            print "\t" . $vlan->{name}, "\n";
+        }
+    }
+    else {
+        print "sorry, no vlans found yet\n";
+    }
+
+}
+
+sub init {
+    $token = eval { $ipam->get_token; };
+    if ($@) {
+        print "something went wrong\n";
+        print "$@\n";
+    }
+}
+
 sub fini {
-    $ipam->delete_token($token);
+#    run_logoff();
+    print "\n";
 }
 
 package main;
