@@ -16,6 +16,34 @@ my $api  = $config{'api'};
 my $user = $config{'user'};
 my $pass = $config{'password'};
 
+my %actions = (
+    vlans => {
+        ls  => \&getvlans,
+        add => \&addvlan,
+        cat => \&catvlan,
+        rm  => \&delvlan,
+    },
+    subnets => {
+        ls  => \&getsubnets,
+        add => \&addsubnet,
+        cat => \&catsubnet,
+        rm  => \&delvlan,
+        req => "section id",
+    },
+    devices => {
+        ls  => \&getdevices,
+        add => \&adddevice,
+        cat => \&catdevice,
+        rm  => \&deldevice,
+    },
+    sections => {
+        ls  => \&getsections,
+        add => \&addsection,
+        cat => \&catsection,
+        rm  => \&delsection,
+    },
+);
+
 sub parse_config {
     my $file = shift;
     my %answer;
@@ -76,25 +104,32 @@ sub update_prompt {
 sub help_ls {
     << "END";
 ls 
-    Outputs available ipam controllers
+    In the root of the api, outputs available ipam controllers.
+    In controller context, outputs a listing of objects of the respective controller
 END
 }
 
 sub run_ls {
-    my ($self) = @_;
+    my ($self, @args) = @_;
+    my $base = $self->{base};
     if ( $self->{base} eq "root" ) {
         for my $controller (@controllers) {
             print "$controller\n";
         }
+    }
+    elsif ( exists $actions{$base}{req} ) {
+        if ( defined $args[0]  and $args[0] eq "-i" ) {
+        $actions{$base}{ls}->($args[0]) ;
 
+        }
+        print "we need a " . $actions{$base}{req} . " to ls this controller\n";
+        print "run ls -i <id> \n";
+        print "you should probably need to run cd section, cat <section> to get";
+        print "the section id you require\n";
     }
     else {
-        my %actions = ( 
-            vlans => \&getvlans,
-            sections => \&getsections,
-        );
-        $actions{$self->{base}}->();
-            
+        $actions{$base}{ls}->();
+
     }
 }
 
@@ -115,7 +150,7 @@ END
 
 sub run_cd {
     my ( $self, $controller ) = @_;
-    if ( ! $controller) {
+    if ( !$controller ) {
         $controller = "root";
     }
 
@@ -156,8 +191,9 @@ sub getsections {
     if ( scalar(@$sections) > 0 ) {
         print "Found " . scalar @$sections . " section[s]:\n";
 
+        printf( "%20s %s\n", "name", "id" );
         for my $section (@$sections) {
-            print "\t" . $section->{name}, "\n";
+            printf( "%20s %d\n", $section->{name}, $section->{id} ); 
         }
     }
     else {
@@ -169,7 +205,7 @@ sub getsections {
 sub getvlans {
     my $vlans = eval { $ipam->get_vlans($token); };
     if ($@) {
-        print "Something went wrong getting the sections info: " . $@;
+        print "Something went wrong getting the vlans info: " . $@;
     }
     if ( scalar(@$vlans) > 0 ) {
         print "Found " . scalar @$vlans . " vlan[s]:\n";
@@ -180,6 +216,43 @@ sub getvlans {
     }
     else {
         print "sorry, no vlans found yet\n";
+    }
+
+}
+
+sub getsubnets {
+    my ( $self, %args ) = shift;
+    my $subnets = eval { $ipam->get_subnets( toke => $token, id => $args{id},); };
+    if ($@) {
+        print "Something went wrong getting the subnets info: " . $@;
+    }
+    if ( scalar(@$subnets) > 0 ) {
+        print "Found " . scalar @$subnets . " subnet[s]:\n";
+
+        for my $subnet (@$subnets) {
+            print "\t" . $subnet->{name}, "\n";
+        }
+    }
+    else {
+        print "sorry, no subnets found yet\n";
+    }
+
+}
+
+sub getdevices {
+    my $devices = eval { $ipam->get_devices($token); };
+    if ($@) {
+        print "Something went wrong getting the devices info: " . $@;
+    }
+    if ( scalar(@$devices) > 0 ) {
+        print "Found " . scalar @$devices . " device[s]:\n";
+
+        for my $device (@$devices) {
+            print "\t" . $device->{name}, "\n";
+        }
+    }
+    else {
+        print "sorry, no devices found yet\n";
     }
 
 }
@@ -199,6 +272,7 @@ sub init {
 }
 
 sub fini {
+
     #    run_logoff();
     print "\n";
 }
