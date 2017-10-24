@@ -110,26 +110,19 @@ END
 }
 
 sub run_ls {
-    my ($self, @args) = @_;
+    my ( $self, @args ) = @_;
     my $base = $self->{base};
+
     if ( $self->{base} eq "root" ) {
         for my $controller (@controllers) {
             print "$controller\n";
         }
     }
-    elsif ( exists $actions{$base}{req} ) {
-        if ( defined $args[0]  and $args[0] eq "-i" ) {
-        $actions{$base}{ls}->($args[0]) ;
-
-        }
-        print "we need a " . $actions{$base}{req} . " to ls this controller\n";
-        print "run ls -i <id> \n";
-        print "you should probably need to run cd section, cat <section> to get";
-        print "the section id you require\n";
+    elsif ( exists $actions{$base}{req} || @args ) {
+        _parseargs( $self, @args );
     }
     else {
         $actions{$base}{ls}->();
-
     }
 }
 
@@ -184,6 +177,9 @@ sub run_logoff {
 }
 
 sub getsections {
+    my (%args) = @_;
+    my $verbose = $args{verbose};
+
     my $sections = eval { $ipam->get_sections($token); };
     if ($@) {
         print "Something went wrong getting the sections info: " . $@;
@@ -191,15 +187,19 @@ sub getsections {
     if ( scalar(@$sections) > 0 ) {
         print "Found " . scalar @$sections . " section[s]:\n";
 
-        printf( "%20s %s\n", "name", "id" );
-        for my $section (@$sections) {
-            printf( "%20s %d\n", $section->{name}, $section->{id} ); 
+        if ( defined $verbose ) {
+            print Dumper $sections;
+        }
+        else {
+            printf( "%20s %s\n", "name", "id" );
+            for my $section (@$sections) {
+                printf( "%20s %d\n", $section->{name}, $section->{id} );
+            }
         }
     }
     else {
         print "sorry, no sections found yet\n";
     }
-
 }
 
 sub getvlans {
@@ -221,22 +221,30 @@ sub getvlans {
 }
 
 sub getsubnets {
-    my ( $self, %args ) = shift;
-    my $subnets = eval { $ipam->get_subnets( toke => $token, id => $args{id},); };
+    my (%args)  = @_;
+    my $id      = $args{id};
+    my $verbose = $args{verbose};
+
+    my $subnets = eval { $ipam->get_subnets( token => $token, id => $id, ); };
     if ($@) {
         print "Something went wrong getting the subnets info: " . $@;
     }
-    if ( scalar(@$subnets) > 0 ) {
+
+    if ( defined $subnets && scalar(@$subnets) > 0 ) {
         print "Found " . scalar @$subnets . " subnet[s]:\n";
 
-        for my $subnet (@$subnets) {
-            print "\t" . $subnet->{name}, "\n";
+        if (defined $verbose) {
+            print Dumper $subnets;
+        }
+        else {
+            for my $subnet (@$subnets) {
+                print "\t" . $subnet->{description}, "\n";
+            }
         }
     }
     else {
-        print "sorry, no subnets found yet\n";
+            print "sorry, no subnets found subnet id $id\n";
     }
-
 }
 
 sub getdevices {
@@ -272,12 +280,33 @@ sub init {
 }
 
 sub fini {
-
-    #    run_logoff();
     print "\n";
+}
+
+sub _parseargs {
+    my ( $self, @args ) = @_;
+    my $base = $self->{base};
+    if ( defined $args[0] && $args[0] eq "-i" ) {
+        my $id = $args[1];
+        if ( grep( /^-v$/i, @args ) ) {
+            $actions{$base}{ls}->( id => $id, verbose => "yep", );
+            return;
+        }
+        else {
+            $actions{$base}{ls}->( id => $id, );
+            return;
+        }
+    }
+    elsif ( grep( /^-v$/i, @args ) ) {
+        $actions{$base}{ls}->( verbose => "yep", );
+        return;
+    }
+    print "we need a " . $actions{$base}{req} . " to ls this controller\n";
+    print "run ls -i <id> \n";
+    print "you should probably need to run cd section, cat <section> to get \n";
+    print "the section id you require\n";
 }
 
 package main;
 my $shell = ipamsh->new;
 $shell->cmdloop;
-
