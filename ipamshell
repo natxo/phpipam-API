@@ -233,7 +233,7 @@ sub getsubnets {
     if ( defined $subnets && scalar(@$subnets) > 0 ) {
         print "Found " . scalar @$subnets . " subnet[s]:\n";
 
-        if (defined $verbose) {
+        if ( defined $verbose ) {
             print Dumper $subnets;
         }
         else {
@@ -243,7 +243,7 @@ sub getsubnets {
         }
     }
     else {
-            print "sorry, no subnets found subnet id $id\n";
+        print "sorry, no subnets found subnet id $id\n";
     }
 }
 
@@ -274,8 +274,9 @@ sub init {
     # login ipam
     $token = eval { $ipam->get_token; };
     if ($@) {
-        print "something went wrong\n";
+        print "something went wrong:\n";
         print "$@\n";
+        exit 1;
     }
 }
 
