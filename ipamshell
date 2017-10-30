@@ -42,6 +42,12 @@ my %actions = (
         cat => \&catsection,
         rm  => \&delsection,
     },
+    folders => {
+        ls  => \&getfolders,
+        add => \&addfolder,
+        cat => \&catfolder,
+        rm  => \&delfolder,
+    },
 );
 
 sub parse_config {
@@ -94,11 +100,21 @@ sub base {
     }
 }
 
+
+#===  FUNCTION  ================================================================
+#         NAME: _update_prompt
+#      PURPOSE: modify the shell prompt to show controller context
+#   PARAMETERS: $self Term::Shell object
+#      RETURNS: modified prompt 
+#  DESCRIPTION: 
+#       THROWS: no exceptions
+#     COMMENTS: none
+#     SEE ALSO: n/a
+#===============================================================================
 sub update_prompt {
     my ($self) = @_;
     my $base = $self->base();
-    $self->{'prompt'} = "$base > ";
-    return;
+    return $self->{'prompt'} = "$base > ";
 }
 
 sub help_ls {
@@ -106,6 +122,7 @@ sub help_ls {
 ls 
     In the root of the api, outputs available ipam controllers.
     In controller context, outputs a listing of objects of the respective controller
+    All contexts accept the -v switch for verbose output.
 END
 }
 
@@ -119,7 +136,7 @@ sub run_ls {
         }
     }
     elsif ( exists $actions{$base}{req} || @args ) {
-        _parseargs( $self, @args );
+        _parseargs( $self, \@args, "ls", );
     }
     else {
         $actions{$base}{ls}->();
@@ -284,22 +301,34 @@ sub fini {
     print "\n";
 }
 
+#===  FUNCTION  ================================================================
+#         NAME: _parseargs
+#      PURPOSE: see name subroutine
+#   PARAMETERS: $self, $args_ref and $cmd passed (ls, cat, del, add,..)
+#      RETURNS: result of $actions{$base}{cmd}->() with or without
+#      arguments
+#       THROWS: no exceptions
+#     COMMENTS: $self is the Term::Shell object; $args_ref is the array
+#     reference containing the arguments passed to the Term::Shell
+#     commands (like -v for verbose, -i for id, etc); $cmd is
+#     Term::Shell commmand that will be executed like ls, cat, add, etc.
+#===============================================================================
 sub _parseargs {
-    my ( $self, @args ) = @_;
+    my ( $self, $args_ref, $cmd ) = @_;
     my $base = $self->{base};
-    if ( defined $args[0] && $args[0] eq "-i" ) {
-        my $id = $args[1];
-        if ( grep( /^-v$/i, @args ) ) {
-            $actions{$base}{ls}->( id => $id, verbose => "yep", );
+    if ( defined $args_ref->[0] && $args_ref->[0] eq "-i" ) {
+        my $id = $args_ref->[1];
+        if ( grep( /^-v$/i, @$args_ref ) ) {
+            $actions{$base}{$cmd}->( id => $id, verbose => "yep", );
             return;
         }
         else {
-            $actions{$base}{ls}->( id => $id, );
+            $actions{$base}{$cmd}->( id => $id, );
             return;
         }
     }
-    elsif ( grep( /^-v$/i, @args ) ) {
-        $actions{$base}{ls}->( verbose => "yep", );
+    elsif ( grep( /^-v$/i, @$args_ref ) ) {
+        $actions{$base}{$cmd}->( verbose => "yep", );
         return;
     }
     print "we need a " . $actions{$base}{req} . " to ls this controller\n";
