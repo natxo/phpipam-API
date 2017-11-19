@@ -16,6 +16,7 @@ my $api  = $config{'api'};
 my $user = $config{'user'};
 my $pass = $config{'password'};
 
+# dispatch table
 my %actions = (
     vlans => {
         ls  => \&getvlans,
@@ -331,8 +332,8 @@ sub _parseargs {
         $actions{$base}{$cmd}->( verbose => "yep", );
         return;
     }
-    print "we need a " . $actions{$base}{req} . " to ls this controller\n";
-    print "run ls -i <id> \n";
+    print "we need a " . $actions{$base}{req} . " to $cmd this controller\n";
+    print "run $cmd -i <id> \n";
     print "you should probably need to run cd section, cat <section> to get \n";
     print "the section id you require\n";
 }
