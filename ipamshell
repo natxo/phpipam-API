@@ -221,6 +221,9 @@ sub getsections {
 }
 
 sub getvlans {
+    my (%args) = @_;
+    my $verbose = $args{verbose};
+
     my $vlans = eval { $ipam->get_vlans($token); };
     if ($@) {
         print "Something went wrong getting the vlans info: " . $@;
@@ -228,8 +231,14 @@ sub getvlans {
     if ( scalar(@$vlans) > 0 ) {
         print "Found " . scalar @$vlans . " vlan[s]:\n";
 
-        for my $vlan (@$vlans) {
-            print "\t" . $vlan->{name}, "\n";
+        if ( defined $verbose ) {
+            print Dumper $vlans;
+        }
+        else {
+
+            for my $vlan (@$vlans) {
+                print "\t" . $vlan->{name}, "\n";
+            }
         }
     }
     else {
