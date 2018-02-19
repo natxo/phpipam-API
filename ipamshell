@@ -43,12 +43,12 @@ my %actions = (
         cat => \&catsection,
         rm  => \&delsection,
     },
-    folders => {
-        ls  => \&getfolders,
-        add => \&addfolder,
-        cat => \&catfolder,
-        rm  => \&delfolder,
-    },
+    addreses => {
+        ls  => \&getaddresses,
+        add => \&addaddress,
+        cat => \&cataddress,
+        rm  => \&deladdress,
+    }
 );
 
 sub parse_config {
@@ -101,13 +101,12 @@ sub base {
     }
 }
 
-
 #===  FUNCTION  ================================================================
 #         NAME: _update_prompt
 #      PURPOSE: modify the shell prompt to show controller context
 #   PARAMETERS: $self Term::Shell object
-#      RETURNS: modified prompt 
-#  DESCRIPTION: 
+#      RETURNS: modified prompt
+#  DESCRIPTION:
 #       THROWS: no exceptions
 #     COMMENTS: none
 #     SEE ALSO: n/a
