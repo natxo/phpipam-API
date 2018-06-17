@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use Data::Dumper;
 use lib 'lib';
-use phpipam::API;
+use  phpipam::Token::Token;
 
 # process config file
 my %config = parse_config("api.conf");
@@ -74,7 +74,7 @@ sub parse_config {
     return %answer;
 }
 
-my $ipam = phpipam::API->new(
+my $ipam = phpipam::Token::Token->new(
     proto    => $prot,
     url      => $url,
     api      => $api,
