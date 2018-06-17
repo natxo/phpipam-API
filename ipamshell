@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use Data::Dumper;
 use lib 'lib';
-use  phpipam::Token::Token;
+use phpipam::Token::Token;
 
 # process config file
 my %config = parse_config("api.conf");
@@ -58,13 +58,12 @@ sub parse_config {
     open CONFIG, "$file" or die "Couldn't read config file $file: $!\n";
     while (<CONFIG>) {
 
+        # remove char returns
+        chomp;
+
         # skip blanks and comments
         next if (/^#|^\s*$/);
         my ( $variable, $value ) = split /=/;
-
-        # remove char returns
-        chomp $variable;
-        chomp $value;
 
         # assing to hash
         $answer{$variable} = $value;

@@ -7,7 +7,7 @@ phpipam::API - Provides a Perl5 interface to the phpipam API (https://phpipam.ne
 =head1 SYNOPSIS
 
     use phpipam::API;
-    my $ipam = phpipam::API->new(
+    my $ipam = phpipam::Token::Token->new(
         proto       => "http",
         url         => "server.domain.tld/phpipam/api/",
         api         => "name_api_phpipam",
@@ -125,7 +125,7 @@ You will be able to follow the whole http client/server conversation (it will po
 
 =head2 Constructor
 
-    my $ipam = phpipam::API->new(
+    my $ipam = phpipam::Token::Token->new(
         proto => "http",
         url     => "server.domain.tld/phpipam/api/",
         api     => "name_api_phpipam",
